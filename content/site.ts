@@ -85,8 +85,8 @@ export const site = {
   notifyFormAction: '',
   sponsorPacketUrl: '/bchacks-sponsorship-packet.pdf', // CONFIRM — add the PDF to public/
   codeOfConductUrl: 'https://github.com/MLH/mlh-policies/blob/main/code-of-conduct.md', // CONFIRM
-  contactEmail: 'hello@bchacks.ca', // CONFIRM
-  sponsorEmail: 'sponsor@bchacks.ca', // CONFIRM
+  contactEmail: 'cscu.okanagan@gmail.com',
+  sponsorEmail: 'cscu.okanagan@gmail.com',
 
   /**
    * Forms go through Netlify Forms (the site is hosted on Netlify; setup in README "Forms").
