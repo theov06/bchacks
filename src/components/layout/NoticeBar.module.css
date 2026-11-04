@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   z-index: 51;
-  background: color-mix(in srgb, var(--coral) 85%, transparent);
+  background: color-mix(in srgb, var(--error-on-cream) 85%, transparent);
   border-bottom: 1px solid var(--line);
   font-size: var(--text-sm);
   line-height: 1.4;
@@ -18,7 +18,7 @@
   margin-right: var(--s-2);
   font-size: var(--text-xs);
   letter-spacing: 0.06em;
-  color: var(--outline);
+  color: var(--white);
 }
 /* Padding grows the tap area to 44px without making the bar taller. */
 .inner a {
@@ -27,7 +27,7 @@
   padding-block: 12px;
   margin-block: -12px;
   font-weight: 600;
-  color: var(--outline);
+  color: var(--white);
   white-space: nowrap;
 }
 @media (max-width: 480px) {

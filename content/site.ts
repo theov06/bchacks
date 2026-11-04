@@ -105,9 +105,8 @@ export const site = {
   discordUrl: 'https://discord.gg/bchacks', // CONFIRM
 
   social: [
-    { label: 'Instagram', href: 'https://instagram.com/bchacks', icon: 'instagram' }, // CONFIRM
-    { label: 'LinkedIn', href: 'https://linkedin.com/company/bchacks', icon: 'linkedin' }, // CONFIRM
-    { label: 'Discord', href: 'https://discord.gg/bchacks', icon: 'discord' }, // CONFIRM
+    { label: 'Instagram', href: 'https://www.instagram.com/bchacks/', icon: 'instagram' }, // CONFIRM
+    // LinkedIn and Discord removed for now; add them back here when the links are ready.
   ] as const,
 
   pastEditions: [
@@ -136,7 +135,7 @@ export const site = {
     heading: 'You made it to the bottom. Now come build.',
     highlight: 'Now come build.',
     /** Shown under the heading while applications are open. */
-    closesLabel: 'Applications close Nov 18, 2026',
+    closesLabel: 'Applications are opening soon!',
     credit: 'Run by Computer Science Course Union (CSCU) at UBC Okanagan.',
   },
 
@@ -146,7 +145,7 @@ export const site = {
   /** Optional dated banner above the header. Set to null to hide. */
   notice: {
     date: '',
-    label: 'SPONSOR UPDATE',
+    label: '',
     text: 'Sponsor us for BCHacks 2026. Contact us to get involved.',
     href: '/#sponsors', // opens the sponsor pop-up form; without JS, the home page's sponsors section
     opensSponsorForm: true,

@@ -58,7 +58,7 @@ export function SponsorDialog() {
           noValidate
         >
           <input type="hidden" name="form-name" value="sponsor" />
-          <p className={styles.lede}>Tell us who you are and we'll send you our sponsorship deck.</p>
+          <p className={styles.lede}>We'll only use this to send you our sponsorship deck and follow up.</p>
 
           {/* Honeypot: people never see it; bots that fill it in are dropped by Netlify. */}
           <div className={styles.honeypot} aria-hidden="true">
@@ -88,7 +88,7 @@ export function SponsorDialog() {
             </div>
           ))}
 
-          <p className={styles.note}>We'll only use this to send you our sponsorship deck and follow up.</p>
+          <p className={styles.note}>If you have any questions, feel free to contact us at {site.contactEmail}.</p>
 
           <button type="submit" className={cx(buttonStyles.btn, buttonStyles.primary, buttonStyles.sun, styles.submit)}>
             <span className={styles.spinner} aria-hidden="true" />
