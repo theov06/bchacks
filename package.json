@@ -14,7 +14,7 @@
     "audit": "node scripts/visual/audit.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.23.4"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.2",
