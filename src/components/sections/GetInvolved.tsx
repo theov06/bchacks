@@ -25,7 +25,7 @@ export function GetInvolved() {
                 </span>
                 <h3>{r.title}</h3>
                 <p>{r.description}</p>
-                <Button href={r.formUrl} tone={r.tone} size="sm" external className={styles.cta}>
+                <Button href={r.formUrl} tone={r.tone} size="sm" external={/^https?:/.test(r.formUrl)} className={styles.cta}>
                   {r.cta}
                 </Button>
               </li>
