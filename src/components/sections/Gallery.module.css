@@ -1,0 +1,336 @@
+/*
+ * Past photos (v3.1, spec 0.8.2) on the night sky (v3 scene 3). Layout box: .scene-section
+ * in global.css. Polaroids hang from strings of fairy lights; the wire's sag (Gallery.tsx
+ * WIRE_TOP + SAG) and each photo's --drop come from the same curve, so clips sit on the wire.
+ */
+.gallery {
+  --accent: var(--sun);
+  /* Below the art: its own bottom colour (the ridge), which is also the canyon's top. */
+  --scene-base: var(--scene-schedule);
+  --art-h: 980;
+  --pad-top: 110px;
+  --spacer: 150;
+  --ph-pad-top: 200px; /* the moon sits above the heading */
+  --ph-spacer: 160px;
+}
+
+.strings {
+  display: grid;
+  gap: 28px;
+  max-width: calc(var(--max) + 2 * var(--gutter) + 80px);
+  margin: 36px auto 0;
+  padding-inline: var(--gutter);
+}
+.string {
+  position: relative;
+}
+
+/*
+ * Desktop: two strings of photos make the section taller than the art. Pinning the art to
+ * the top keeps the moon beside the heading (as in the design) instead of sliding down
+ * behind the photos; the section's base colour carries on below the ridge.
+ */
+@media (min-width: 760px) {
+  .gallery > :global([data-scene]) > svg {
+    top: 0;
+    bottom: auto;
+  }
+}
+
+/* ---------- Fairy lights ---------- */
+.lights {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100px;
+  pointer-events: none;
+}
+.wire {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  overflow: visible;
+}
+.wire path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--cream) 45%, transparent);
+  stroke-width: 2;
+}
+.bulb {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 9px;
+  height: 13px;
+  translate: -50% -2px;
+  border-radius: 50% 50% 45% 45%;
+  background: var(--lantern);
+  box-shadow:
+    0 0 6px 2px color-mix(in srgb, var(--lantern) 70%, transparent),
+    0 0 18px 6px color-mix(in srgb, var(--lantern) 28%, transparent);
+  animation: glow 4.5s var(--ease-in-out) infinite alternate;
+  animation-delay: calc(var(--i) * -0.7s);
+}
+@keyframes glow {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ---------- Polaroids ---------- */
+.photos {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--count), minmax(0, 1fr));
+}
+.hang {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--drop);
+}
+.swing {
+  position: relative;
+  width: min(100% - 28px, 300px);
+  padding-top: 8px;
+  transform-origin: 50% 0;
+  rotate: var(--tilt);
+  animation: sway calc(7s + var(--n) * 0.9s) var(--ease-in-out) infinite alternate;
+  animation-delay: calc(var(--n) * -1.7s);
+}
+@keyframes sway {
+  from {
+    transform: rotate(-1.2deg);
+  }
+  to {
+    transform: rotate(1.2deg);
+  }
+}
+/* A small wooden clothes-peg on the wire. */
+.clip {
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  z-index: 1;
+  width: 14px;
+  height: 30px;
+  translate: -50% 0;
+  background: linear-gradient(90deg, var(--wood) 0 45%, var(--wood-dark) 45% 55%, var(--wood) 55%);
+  border: 2px solid var(--outline);
+  border-radius: 4px;
+}
+.polaroid {
+  --focus: var(--outline);
+  padding: 12px 12px 0;
+  background: var(--cream);
+  border: var(--stroke);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-md);
+}
+.photo {
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 2px solid var(--outline);
+  border-radius: 6px;
+  background: var(--panel);
+  cursor: zoom-in;
+}
+.photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: scale var(--dur) var(--ease-out);
+}
+.photo:hover img {
+  scale: 1.04;
+}
+.photo:focus-visible {
+  outline: 3px solid var(--outline);
+  outline-offset: 3px;
+}
+.caption {
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+  padding: 8px 4px 10px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--card-ink);
+}
+/* "Photo coming soon": the frame without a photo yet. */
+.soon {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  aspect-ratio: 4 / 3;
+  border: 2px dashed var(--slot-dash);
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--card-muted);
+}
+
+/* Off-screen: the lights and photos stop moving (src/scripts/gallery.ts). */
+.gallery[data-paused] :is(.bulb, .swing) {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bulb,
+  .swing {
+    animation: none;
+  }
+  .photo img {
+    transition: none;
+  }
+}
+
+/* ---------- Lightbox ---------- */
+.lightbox {
+  width: min(100% - 24px, 1200px);
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+}
+.lightbox::backdrop {
+  background: color-mix(in srgb, var(--outline) 88%, transparent);
+}
+.lbFrame {
+  position: relative;
+  padding: 14px 14px 0;
+  background: var(--cream);
+  border: var(--stroke);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-lg);
+}
+.lbFigure {
+  display: grid;
+}
+.lbImg {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc(100dvh - 180px);
+  margin-inline: auto;
+  border: 2px solid var(--outline);
+  border-radius: 8px;
+  touch-action: pan-y pinch-zoom;
+  user-select: none;
+}
+.lbCaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  min-height: 60px;
+  padding: 10px 4px 12px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--card-ink);
+}
+.lbCount {
+  font-size: 14px;
+  color: var(--card-muted);
+}
+.lbNav {
+  position: absolute;
+  inset: 50% -26px auto;
+  display: flex;
+  justify-content: space-between;
+  translate: 0 -50%;
+  pointer-events: none;
+}
+.lbBtn {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  color: var(--outline);
+  background: var(--sun);
+  border: var(--stroke);
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  pointer-events: auto;
+}
+.lbBtn:hover {
+  translate: -1px -1px;
+  box-shadow: 5px 5px 0 var(--outline);
+}
+.lbClose {
+  position: absolute;
+  top: -22px;
+  right: -22px;
+  z-index: 1;
+  background: var(--cream);
+}
+
+/* ---------- Phones: one long string you swipe along ---------- */
+@media (max-width: 759px) {
+  .gallery {
+    background: linear-gradient(var(--scene-tracks), var(--scene-tracks-mid) 60%, var(--scene-tracks-end));
+  }
+  .strings {
+    display: flex;
+    gap: 0;
+    margin-top: 28px;
+    padding: 0 0 24px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: thin;
+  }
+  .string {
+    flex: none;
+    width: calc(var(--count) * 232px);
+  }
+  .string:first-child {
+    margin-left: calc(var(--gutter) - 16px);
+  }
+  .string:last-child {
+    margin-right: calc(var(--gutter) - 16px);
+  }
+  .hang {
+    scroll-snap-align: center;
+  }
+  .swing {
+    width: 204px;
+  }
+  .caption {
+    font-size: 14px;
+  }
+  .lightbox {
+    width: calc(100% - 16px);
+  }
+  .lbFrame {
+    padding: 10px 10px 0;
+  }
+  .lbImg {
+    max-height: calc(100dvh - 220px);
+  }
+  .lbNav {
+    position: static;
+    translate: none;
+    gap: 12px;
+    justify-content: center;
+    padding-bottom: 14px;
+  }
+  .lbClose {
+    top: -14px;
+    right: -6px;
+  }
+}

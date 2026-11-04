@@ -1,0 +1,82 @@
+---
+/**
+ * Dev-only landmark review: /dev/landmark/front | three-quarter | close | phone | mask.
+ * mask = flat silhouette for scripts/visual/logo-match.mjs. Not built for production.
+ */
+export function getStaticPaths() {
+  // Declared inside: Astro runs getStaticPaths in isolation from the rest of the frontmatter.
+  const views = ['front', 'three-quarter', 'close', 'phone', 'mask'];
+  return import.meta.env.DEV ? views.map((view) => ({ params: { view } })) : [];
+}
+const { view } = Astro.params;
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Landmark · {view}</title>
+    <!-- React fast-refresh preamble (dev-only page; Astro injects it only for client:* islands). -->
+    <script is:inline type="module">
+      import RefreshRuntime from '/@react-refresh';
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0f1539;
+      }
+      #world {
+        position: fixed;
+        inset: 0;
+      }
+      /* phone: real hero-stage size; mask: canvas exactly 514 × 1024 for the shape check */
+      html[data-view='phone'] #world {
+        inset: auto;
+        top: 72px;
+        left: 0;
+        right: 0;
+        height: clamp(300px, 82vw, 380px);
+        outline: 1px dashed rgb(132 219 247 / 0.35);
+      }
+      html[data-view='mask'] #world {
+        inset: 0 auto auto 0;
+        width: 514px;
+        height: 1024px;
+      }
+      html[data-view='mask'] .tag {
+        display: none;
+      }
+      .tag {
+        position: fixed;
+        left: 16px;
+        top: 14px;
+        z-index: 2;
+        margin: 0;
+        font: 500 12px ui-monospace, Consolas, monospace;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #84dbf7;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="tag">Landmark · {view}</p>
+    <div id="world" data-view={view}></div>
+    <script is:inline define:vars={{ view }}>
+      document.documentElement.dataset.view = view;
+    </script>
+    <script>
+      if (import.meta.env.DEV) {
+        import('../../../world/landmark/mountLandmark').then(({ mountLandmark }) => mountLandmark(document.getElementById('world')!));
+      }
+    </script>
+  </body>
+</html>

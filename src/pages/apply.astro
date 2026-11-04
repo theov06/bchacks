@@ -1,0 +1,40 @@
+---
+/**
+ * /apply (v3.1, spec 0.8.4). content/site.ts applyMode:
+ * - soon: "Applications will open soon" + email sign-up (every Apply button links here)
+ * - open: redirects to the application form (site.applyUrl)
+ */
+import Base from '@layouts/Base.astro';
+import { ApplySoon } from '@components/sections/ApplySoon';
+import { site } from '@content/site';
+
+const open = site.applyMode === 'open';
+---
+
+{
+  open ? (
+    <html lang="en-CA">
+      <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="noindex" />
+        <meta http-equiv="refresh" content={`0; url=${site.applyUrl}`} />
+        <link rel="canonical" href={site.applyUrl} />
+        <title>Apply · {site.edition}</title>
+      </head>
+      <body>
+        <p>
+          Taking you to the application form. <a href={site.applyUrl}>Apply to {site.edition}</a>
+        </p>
+      </body>
+    </html>
+  ) : (
+    <Base
+      title="Apply"
+      description={`Applications for ${site.edition} open soon. Leave your email and we'll tell you the moment they open.`}
+      base="/"
+    >
+      <ApplySoon />
+    </Base>
+  )
+}

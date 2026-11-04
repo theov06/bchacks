@@ -1,0 +1,90 @@
+/* FAQ (v3 scene 7): underwater. Layout box: .scene-section in global.css. */
+.faq {
+  --accent: var(--ice);
+  --scene-base: var(--scene-faq);
+  --art-h: 1300;
+  --pad-top: 90px;
+  --spacer: 330;
+  --ph-spacer: 300px; /* the deep shadow and the kokanee */
+}
+.faq h2 + p a,
+.faq :global(.lede) a {
+  color: var(--ice);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  align-items: start;
+  gap: 16px;
+  margin-top: 40px;
+}
+.qa {
+  background: var(--faq-panel);
+  border: 2px solid var(--faq-edge);
+  border-radius: var(--r-md);
+  padding: 0 22px;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+.qa:is(:hover, :focus-within) {
+  border-color: var(--sky);
+}
+.q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 64px;
+  padding-block: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  list-style: none;
+  cursor: pointer;
+}
+.q::-webkit-details-marker {
+  display: none;
+}
+.q:focus-visible {
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+.qIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--sky);
+  color: var(--sky);
+  transition: transform var(--dur) var(--ease-out);
+}
+.qIcon :global(.icon) {
+  stroke-width: 2.5;
+}
+.qa[open] .qIcon {
+  transform: rotate(45deg);
+}
+.a {
+  margin: 0 0 20px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+.a a {
+  color: var(--ice);
+}
+
+@media (max-width: 759px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 32px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qIcon {
+    transition: none;
+  }
+}

@@ -1,0 +1,85 @@
+.form {
+  width: 100%;
+  max-width: 30rem;
+}
+.label {
+  display: block;
+  margin-bottom: var(--s-2);
+  font-weight: 600;
+}
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+/* Field edge is --text-muted (7.42:1), never --grid alone (A4). */
+.input {
+  flex: 1 1 14rem;
+  min-width: 0;
+  min-height: var(--tap);
+  padding: 0 var(--s-4);
+  background: var(--card-bg);
+  border: 1px solid var(--text-muted);
+  border-radius: 0;
+  color: var(--text);
+}
+.input::placeholder {
+  color: var(--text-muted);
+}
+.input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 0;
+  border-color: var(--sky);
+}
+.input[aria-invalid='true'] {
+  border-color: var(--error);
+}
+/* Same shape as the primary Button: chamfer drawn on ::before so the focus ring shows. */
+.submit {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--tap);
+  padding: 0 var(--s-5);
+  font-weight: 600;
+  color: var(--ink);
+  filter: drop-shadow(0 4px 18px color-mix(in srgb, var(--sky) 32%, transparent));
+}
+.submit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--cta-gradient);
+  clip-path: var(--cut);
+}
+.submit:hover::before {
+  filter: brightness(1.06);
+}
+.submit[disabled] {
+  opacity: 0.7;
+  cursor: progress;
+} 
+.msg {
+  margin-top: var(--s-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+.msg[data-tone='error'] {
+  color: var(--error);
+  font-weight: 500;
+}
+.msg[data-tone='ok'] {
+  color: var(--sky);
+  font-weight: 600;
+}
+/* Netlify honeypot: off-screen, not display:none, so simple bots still fill it. */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

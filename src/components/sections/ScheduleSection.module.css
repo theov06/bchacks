@@ -1,0 +1,102 @@
+/* Schedule (v3 scene 4): Myra Canyon at first light. Layout box: .scene-section in global.css. */
+.schedule {
+  --accent: var(--pink);
+  --scene-base: var(--scene-schedule);
+  --art-h: 1100;
+  --pad-top: 90px;
+  --spacer: 470;
+  --ph-spacer: 300px; /* the trestle band */
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+.day {
+  padding: 26px;
+}
+.pill {
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--tone);
+  border: 2px solid var(--outline);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--outline);
+}
+.day h3 {
+  margin: 14px 0 12px;
+  line-height: 1.2;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--card-ink);
+}
+.day ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 16px;
+  line-height: 1.2;
+}
+.day ul li {
+  display: flex;
+  gap: 14px;
+}
+.time {
+  flex: none;
+  min-width: 64px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--card-muted);
+}
+
+/*
+ * Lanterns on the trestle deck. The deck's top edge is 356 units above the bottom of the
+ * 1100-unit art, and the art scales with the page width (Scene.module.css), so the row
+ * sits at 356 × (100vw / 1440) and each lantern is 52 × 82 units at the same scale.
+ */
+.lanterns {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .lanterns {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(356 * 100vw / 1440);
+    z-index: -1;
+    display: block;
+    pointer-events: none;
+  }
+  .lanternRow {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    justify-items: center;
+    align-items: end;
+  }
+}
+.lantern {
+  display: block;
+  width: calc(52 * 100vw / 1440);
+  height: calc(82 * 100vw / 1440);
+  overflow: visible;
+}
+.lantern line {
+  stroke: var(--outline);
+  stroke-width: 4;
+}
+.lantern rect {
+  fill: var(--tone);
+  stroke: var(--outline);
+  stroke-width: 3;
+}
+.glow {
+  fill: var(--tone);
+  opacity: 0.35;
+  filter: blur(calc(20 * 100vw / 1440));
+}

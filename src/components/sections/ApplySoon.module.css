@@ -1,0 +1,155 @@
+/*
+ * /apply: the hero's sunset scene (okanagan-dusk) under "Applications will open soon."
+ * Same layout idea as the hero: copy in row 1, the scenery row starts 32px under the
+ * copy minus the art's height above its first hill (--hill), so hills never rise behind text.
+ */
+.page {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: calc(-1 * var(--header-h));
+  background: var(--scene-hero);
+}
+/* Keeps stars out from behind the header (same blur band as the hero). */
+.page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: -1;
+  width: min(100%, calc(var(--max) + 2 * var(--gutter) + 96px));
+  height: calc(var(--header-h) + 64px);
+  translate: -50% 0;
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  -webkit-mask-image:
+    linear-gradient(#000 calc(100% - 32px), transparent),
+    linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(#000 calc(100% - 32px), transparent),
+    linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+.inner {
+  --hill: 330px; /* phones: art is 680px tall; its highest hill over the copy is ~330px down */
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding-top: calc(var(--header-h) + var(--notice-h) + 48px);
+}
+.scene {
+  grid-column: 1;
+  grid-row: 2;
+  position: relative;
+  z-index: -2;
+  margin: calc(32px - var(--hill)) calc(50% - 50vw) 0;
+  pointer-events: none;
+}
+.scene .scenery {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  width: 100%;
+  height: 680px;
+}
+.scene .scenery > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.copy {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  max-width: 640px;
+}
+/* Calm zone: a soft dusk-navy pool so nothing bright sits behind the copy. */
+.copy::before {
+  content: '';
+  position: absolute;
+  inset: -30% -25% -22% -60vw;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side at 64% 52%,
+    color-mix(in srgb, var(--bg-hero) 88%, transparent),
+    color-mix(in srgb, var(--bg-hero) 80%, transparent) 55%,
+    color-mix(in srgb, var(--bg-hero) 40%, transparent) 82%,
+    transparent
+  );
+}
+.title {
+  --accent: var(--sun);
+  font-size: clamp(2.5rem, 1.6rem + 3.6vw, 4.5rem);
+  line-height: 1;
+  text-wrap: balance;
+}
+.lede {
+  max-width: 30em;
+  margin-top: 20px;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--text-soft);
+}
+.signup {
+  margin-top: 28px;
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  margin-top: 32px;
+}
+.fact dt {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.fact dd {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  color: var(--white);
+}
+.back {
+  margin-top: 32px;
+}
+
+.wave {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 56px;
+  fill: var(--scene-footer);
+  pointer-events: none;
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .inner {
+    --hill: 300px;
+  }
+}
+/* Desktop: the art scales by width (16:9), so --hill is in vw. */
+@media (min-width: 1024px) {
+  .inner {
+    --hill: calc(100vw * 735 / 1920);
+    padding-top: calc(var(--header-h) + var(--notice-h) + clamp(32px, 10svh - 24px, 96px));
+  }
+  .scene .scenery {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+}
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .inner {
+    --hill: calc(100vw * 780 / 1920);
+  }
+}

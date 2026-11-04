@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/pages/review/sky.astro"
+        ],
+        "createdAt": "2026-11-02T10:53:18.893Z",
+        "reason": "User's Sky Circuit brief (type section) asks for key words in headings in the sky gradient, as in their mockup; spec D2 allows it on headings only"
+      },
+      {
+        "rule": "gradient-text",
+        "value": "*",
+        "files": [
+          "src/styles/global.css"
+        ],
+        "createdAt": "2026-11-02T10:58:43.125Z",
+        "reason": "User's Sky Circuit brief asks for key words in headings in the sky gradient (hero mockup); .sky-text is the single shared utility, headings only per spec D2"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles/global.css"
+        ],
+        "createdAt": "2026-11-03T04:12:23.363Z",
+        "reason": "User's approved design reference (docs/bchacks-design-reference/index.html) specifies When / Apply by / Cost facts with 3px coloured left borders; the user's brief repeats it"
+      }
+    ]
+  }
+}

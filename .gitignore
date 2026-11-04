@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+*.log
+
+# Duplicates of the extracted design-reference folders
+*.zip
+# Local tool cache (machine-specific paths)
+.impeccable/hook.cache.json
+# Local environment / secrets (Netlify holds the real ones)
+.env
+.env.*
+.netlify/

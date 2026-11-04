@@ -1,0 +1,146 @@
+---
+/**
+ * Base layout: landmarks (A2), skip link (A1), metadata (T4), fonts.
+ * Every page passes its own title and description.
+ */
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource/inter/800.css';
+import '@fontsource/jetbrains-mono/500.css';
+import displayFont from '@fontsource/inter/files/inter-latin-800-normal.woff2?url';
+import actionFont from '@fontsource/inter/files/inter-latin-600-normal.woff2?url';
+import bodyFont from '@fontsource/inter/files/inter-latin-400-normal.woff2?url';
+import monoFont from '@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2?url';
+import '@fontsource/geist-pixel/400.css';
+import titleFont from '@fontsource/geist-pixel/files/geist-pixel-latin-400-normal.woff2?url';
+import '../styles/global.css';
+
+import { NoticeBar } from '@components/layout/NoticeBar';
+import { Header } from '@components/layout/Header';
+import { Footer } from '@components/layout/Footer';
+import { SponsorDialog } from '@components/ui/SponsorDialog';
+import { site } from '@content/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** Prefix for home-page anchors in header/footer when not on the home page. */
+  base?: string;
+  noindex?: boolean;
+  showNotice?: boolean;
+}
+const {
+  title,
+  description = site.description,
+  base = '',
+  noindex = false,
+  showNotice = true,
+} = Astro.props;
+
+const fullTitle = title ? `${title} · ${site.edition}` : `${site.edition} · UBC Okanagan's hackathon · ${site.datesLabel}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? site.siteUrl).href;
+const ogImage = new URL('/og-image.png', Astro.site ?? site.siteUrl).href;
+const ogAlt = `${site.edition}: ${site.datesLabel} at ${site.venue.name}, ${site.venue.cityLabel}.`;
+// Dev only: the React fast-refresh preamble the 3D world's .tsx modules need (Astro adds it only for client:* islands).
+const reactPreamble =
+  "import R from '/@react-refresh'; R.injectIntoGlobalHook(window); window.$RefreshReg$ = () => {}; window.$RefreshSig$ = () => (t) => t; window.__vite_plugin_react_preamble_installed__ = true;";
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content="#1B2470" />
+    <meta name="color-scheme" content="dark" />
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="preload" href={titleFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
+    <!--
+      Fallback for the Geist Pixel titles: Inter 800 (already preloaded) scaled to Geist Pixel's
+      average width and line metrics, so the swap moves nothing (T5 CLS). Numbers from the font
+      files: Geist Pixel ascent 1.005, descent 0.295, avg advance 0.479 em vs Inter 800 0.492 em.
+    -->
+    <style is:inline set:html={`@font-face{font-family:'Geist Pixel Fallback';src:url(${displayFont}) format('woff2');font-weight:400;size-adjust:97.4%;ascent-override:103.2%;descent-override:30.3%;line-gap-override:0%}`} />
+    <!-- 600 sets every button label; a late swap re-wraps button rows and shifts the page below (T5 CLS). -->
+    <link rel="preload" href={actionFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={bodyFont} as="font" type="font/woff2" crossorigin />
+    <!-- Mono sets the dates and deadline above the fold; preloading stops the swap from reflowing them (T5 CLS). -->
+    <link rel="preload" href={monoFont} as="font" type="font/woff2" crossorigin />
+
+    <!-- Open Graph / Twitter cards -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogAlt} />
+    <meta property="og:locale" content="en_CA" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={ogAlt} />
+
+    <script is:inline>
+      // Enable JS-only enhancements, and play the logo draw-in once per visit (M1).
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        try {
+          if (!sessionStorage.getItem('bch-intro')) {
+            d.classList.add('logo-intro');
+            sessionStorage.setItem('bch-intro', '1');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    {import.meta.env.DEV && <script is:inline type="module" set:html={reactPreamble} />}
+    <!-- Dev only (above): React fast-refresh preamble for the 3D world's .tsx modules; Astro only adds it for client:* islands. -->
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    
+    <Header base={base} />
+    {showNotice && <NoticeBar isHome={Astro.url.pathname === '/'} />}
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer base={base} />
+    <SponsorDialog />
+  </body>
+</html>
+
+<script>
+  // Shared behaviour for every page. Components render static HTML; these scripts enhance it.
+  import { initHeader } from '../scripts/header';
+  import { initSignup } from '../scripts/signup';
+  import { initSponsorForm } from '../scripts/sponsorForm';
+  initHeader();
+  initSignup();
+  initSponsorForm();
+</script>
+
+<style>
+  main:focus {
+    outline: none;
+  }
+</style>

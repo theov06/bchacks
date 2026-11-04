@@ -1,0 +1,104 @@
+---
+/**
+ * Dev-only blockout review: /dev/island/hero (hero camera) and /dev/island/plan (top-down).
+ * Add ?labels=0 to hide the stop labels. Not built for production.
+ */
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { view: 'hero' } }, { params: { view: 'plan' } }] : [];
+}
+const { view } = Astro.params;
+---
+
+<!doctype html>
+<html lang="en-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Island blockout · {view}</title>
+    <!-- React fast-refresh preamble: Astro only injects it for client:* islands, which this project never uses. Dev-only page. -->
+    <script is:inline type="module">
+      import RefreshRuntime from '/@react-refresh';
+      RefreshRuntime.injectIntoGlobalHook(window);
+      window.$RefreshReg$ = () => {};
+      window.$RefreshSig$ = () => (type) => type;
+      window.__vite_plugin_react_preamble_installed__ = true;
+    </script>
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #0f1539;
+        color: #e6ebff;
+        font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+      }
+      #world {
+        position: fixed;
+        inset: 0;
+      }
+      /* ?stage: size the canvas like the real hero stage (Hero.module.css) to preview the true framing. */
+      html[data-stage] #world {
+        position: absolute;
+        inset: auto;
+        left: 0;
+        right: 0;
+        top: 72px;
+        height: clamp(300px, 82vw, 380px);
+        outline: 1px dashed rgb(132 219 247 / 0.35);
+      }
+      @media (min-width: 1024px) {
+        html[data-stage] #world {
+          left: auto;
+          right: max(32px, calc((100vw - 1200px) / 2));
+          top: 110px;
+          width: min(680px, 52vw);
+          height: min(680px, 72svh);
+        }
+      }
+      .tag {
+        position: fixed;
+        left: 16px;
+        top: 14px;
+        z-index: 20;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #84dbf7;
+      }
+      .lbl {
+        display: grid;
+        gap: 1px;
+        padding: 4px 8px;
+        white-space: nowrap;
+        font-size: 10px;
+        line-height: 1.3;
+        background: rgb(15 21 57 / 0.82);
+        border: 1px solid #84dbf7;
+        pointer-events: none;
+      }
+      .lbl b {
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: #84dbf7;
+      }
+      .lbl span {
+        color: #e6ebff;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="tag">Blockout · {view === 'plan' ? 'top-down layout' : 'hero camera'}</p>
+    <div id="world" data-view={view}></div>
+    <script is:inline>
+      if (new URLSearchParams(location.search).has('stage')) document.documentElement.dataset.stage = '';
+    </script>
+    <script>
+      // Behind a DEV check so production builds tree-shake the whole 3D bundle out.
+      if (import.meta.env.DEV) {
+        import('../../../world/mountBlockout').then(({ mountBlockout }) => mountBlockout(document.getElementById('world')!));
+      }
+    </script>
+  </body>
+</html>

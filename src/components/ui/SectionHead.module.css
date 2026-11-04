@@ -1,0 +1,30 @@
+/* v3 section heading: eyebrow, h2 with one highlighted phrase (the section's --accent), lede. */
+.head {
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+.title {
+  font-size: var(--h2);
+  line-height: 1.05;
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: 0;
+  color: var(--text);
+  /* Fill each line like the design (not balanced), but never leave one word alone on the last line. */
+  text-wrap: pretty;
+}
+.lede {
+  max-width: 36em;
+  margin-top: 18px;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+/* Phones: short headings break into even lines, so no word sits alone on the last one. */
+@media (max-width: 759px) {
+  .title {
+    text-wrap: balance;
+  }
+}

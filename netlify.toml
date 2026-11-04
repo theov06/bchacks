@@ -1,0 +1,24 @@
+# Netlify (hosting, spec T9). Forms: Netlify Forms; the deck auto-email: netlify/functions.
+# Secrets (RESEND_API_KEY etc.) are set in the Netlify UI, never here. See README "Forms".
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  directory = "netlify/functions"
+
+# v3.1: the sponsor page became the pop-up form on the home page.
+[[redirects]]
+  from = "/sponsor"
+  to = "/#sponsors"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/sponsor/"
+  to = "/#sponsors"
+  status = 301
+  force = true

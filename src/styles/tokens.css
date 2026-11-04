@@ -1,0 +1,210 @@
+/*
+ * v3 "Journey down the valley" — design tokens. Approved Nov 4, 2026; visual spec:
+ * docs/bchacks-design-reference-v3/ (index.html + screenshots). Every colour, size and
+ * shape used on the site is defined here, once. Contrast ratios: spec 3.1 / 0.6.
+ */
+:root {
+  /* 3.1 Colour — section backgrounds, dusk to night down the page */
+  --bg-hero: #1b2470;
+  --bg-about: #1d3c8c;
+  --bg-tracks: #2b2a7a;
+  --bg-schedule: #1f2366;
+  --bg-sponsors: #171c55;
+  --bg-involved: #12174a;
+  --bg-faq: #0f1442;
+  --bg-footer: #0b0f33;
+  --bg-page: #141a55;
+
+  /*
+   * Scene base colours (v3): each section's top colour = the top of its scene, and each
+   * scene's bottom colour flows into the next section. Values from the scene SVGs.
+   */
+  --scene-hero: #1b2470;
+  --scene-hero-wave: #13205a; /* top of the aurora scene */
+  --scene-about: #13205a;
+  --scene-about-end: #1a2e78;
+  --scene-tracks: #1a2e78;
+  --scene-tracks-mid: #121a55;
+  --scene-tracks-end: #0e1442;
+  --scene-schedule: #0c1036;
+  --scene-sponsors: #23503f;
+  --scene-involved: #4cc3e2;
+  --scene-faq: #1e6fb0;
+  --scene-footer: #0a1a4a;
+
+  /* v3 section accents and surfaces */
+  --violet-ink: #3b2a9a; /* heading highlight on the light lake */
+  --faq-panel: rgb(10 26 74 / 0.92); /* FAQ <details> panels underwater */
+  --faq-edge: #3e78c8;
+  --slot-dash: #9aa0cc; /* dashed "Your logo here" outline on cream */
+  --footer-rule: #2a3a7a;
+  --shadow-deep: #000a2e; /* footer Apply shadow on the lakebed */
+  --lake-deep: #2fa7d6; /* Explore: the oval of lake water under the island */
+  --foam: #e8fbff;
+
+  /* Cream "sticker" cards */
+  --cream: #fff8ec;
+  --card-ink: #1b2470; /* headings and body on cream */
+  --card-muted: #3a3f75; /* secondary text on cream */
+  --card-link: #2a3fa6; /* links on cream */
+  --outline: #0e1446; /* sticker borders and offset shadows */
+
+  /* Accents */
+  --sun: #ffd08a;
+  --sky: #84dbf7;
+  --ice: #b5ecff;
+  --coral: #ff8a7a;
+  --aqua: #5fd6e8;
+  --mint: #7fe0a8;
+  --pink: #f2a6c2;
+
+  /* Text on the dusk/night backgrounds */
+  --text: #f4f6ff;
+  --text-soft: #dce2ff; /* ledes and body copy */
+  --text-muted: #c9d0f0; /* labels, captions */
+  --white: #ffffff;
+
+  /* Night-section surfaces (FAQ cards, sponsor slots) */
+  --panel: #1b2166;
+  --panel-edge: #3a429a;
+  --slot-edge: #6f78c9;
+  --rule: #2a3175;
+
+  /* 3D only, used sparingly */
+  --lantern: #ffd27a;
+  --wood: #c98a5a; /* the Myra trestle's planks; gallery photo clips */
+  --wood-dark: #8a5a3a; /* the barn door */
+  --vine: #4ade80;
+
+  /*
+   * Older names kept as aliases so not-yet-rebuilt parts render in the new palette.
+   * Don't use these in new code.
+   */
+  --navy: var(--bg-faq);
+  --deep: var(--panel);
+  --grid: var(--panel-edge);
+  --electric: var(--aqua);
+  --ink: var(--outline);
+  --card-bg: var(--panel);
+  --line: var(--rule);
+  --line-strong: var(--panel-edge);
+  --scrim: color-mix(in srgb, var(--bg-hero) 72%, transparent);
+  --twilight-1: var(--bg-hero);
+  --twilight-2: var(--bg-hero);
+  --twilight-3: var(--bg-hero);
+  --sky-dark: var(--card-link);
+  --sky-deep: var(--card-link);
+  --cta-gradient: var(--sky);
+  --sky-text-gradient: linear-gradient(var(--sun), var(--sun));
+  --grid-light: transparent;
+  --glow-sky: none;
+
+  /* Sticker shape: rounded corners, 3px ink border, solid offset shadow (no blur) */
+  --r-sm: 14px;
+  --r-md: 18px;
+  --r-lg: 22px;
+  --r-xl: 24px;
+  --r-pill: 999px;
+  --stroke: 3px solid var(--outline);
+  --shadow-sm: 4px 4px 0 var(--outline);
+  --shadow-md: 6px 6px 0 var(--outline);
+  --shadow-lg: 8px 8px 0 var(--outline);
+
+  /* Form errors only. The one non-brand hue (#a3123a) lifted for dark surfaces. */
+  --error: color-mix(in srgb, #a3123a 45%, var(--white));
+  --error-on-cream: #a3123a; /* the same hue unlifted, for errors on cream panels */
+
+  /* 3.2 Typography */
+  --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* v3.1 titles (hero h1, section h2s, footer headline, page h1s). The fallback face is metric-matched Inter 800 (global.css). */
+  --font-title: 'Geist Pixel', 'Geist Pixel Fallback', 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  --heading-weight: 800;
+  --heading-tracking: -0.03em;
+  --label-tracking: 0.16em; /* mono labels are uppercase */
+  --eyebrow-tracking: 0.18em;
+
+  /*
+   * Type scale: ~1.25 steps at 375px widening to ~1.333 at 1280px.
+   * 13 · 15 · 16 · 17→20 · 20→24 · 20→24 · 32→52 · 40→72 · 52→96
+   */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1rem;
+  --text-lg: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);
+  --h3: clamp(1.25rem, 1.1rem + 0.6vw, 1.5rem);
+  --h2: clamp(2.125rem, 4vw, 3.375rem); /* mockup: clamp(34px, 4vw, 54px) */
+  --h1: clamp(2.5rem, 6vw, 4.5rem);
+  /* Hero headline: 48px → 84px (mockup: clamp(48px, 6vw, 84px)) */
+  --display: clamp(3rem, 6vw, 5.25rem);
+
+  /* 3.3 Shape. Chamfers are retired: the old cut tokens now round the corners. */
+  --chamfer: 14px;
+  --chamfer-lg: 22px;
+  --angle: 30deg;
+  --hexagon: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  --cut: inset(0 round var(--r-sm));
+  --cut-lg: inset(0 round var(--r-lg));
+
+  /* Spacing — 4px base */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+  --s-10: 128px;
+
+  /*
+   * Ridge grid (see .grid in global.css): 12 columns, two alignment edges.
+   * Ridge edge = column 1 (headings, labels, marginal data).
+   * Reading edge = column 4 (body copy, lists, controls).
+   * --iso = cot(30deg): horizontal run for 1 unit of rise at the logo's angle.
+   */
+  --col-gap: var(--s-5);
+  --iso: 1.7320508;
+  --ridge-cols: [full-start ridge-start read-start tail-start] minmax(0, 1fr) [ridge-end read-end tail-end full-end];
+
+  --section-pad: var(--s-8);
+  --gutter: 24px;
+  --max: 1192px; /* mockup: 1240 container − 2 × 24 gutter */
+  --header-h: 64px;
+  --tap: 48px;
+
+  /* Focus: 2px --sky ring, 11.34:1 on --navy */
+  --focus: var(--sun);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-fast: 160ms;
+  --dur: 280ms;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --section-pad: var(--s-9);
+    --gutter: 24px;
+    --header-h: 80px; /* design reference: 18px padding + 44px row */
+    --col-gap: var(--s-6);
+  }
+}
+@media (min-width: 900px) {
+  :root {
+    --ridge-cols:
+      [full-start ridge-start] repeat(3, minmax(0, 1fr))
+      [ridge-end read-start] repeat(6, minmax(0, 1fr))
+      [read-end tail-start] repeat(3, minmax(0, 1fr))
+      [tail-end full-end];
+  }
+}
+@media (min-width: 1100px) {
+  :root {
+    --section-pad: var(--s-10);
+  }
+}

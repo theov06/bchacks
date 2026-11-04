@@ -1,0 +1,119 @@
+.logo {
+  height: auto;
+  overflow: visible;
+}
+
+/* Dark surfaces: soft outer glow (spec 6B). Static, also without JS. */
+.logo[data-surface='dark'] {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--sky) 45%, transparent))
+    drop-shadow(0 0 22px color-mix(in srgb, var(--electric) 35%, transparent));
+}
+
+/* Reveal layers stay hidden unless the intro plays, so no-JS and repeat visits show the final logo. */
+.guides,
+.trace {
+  opacity: 0;
+}
+
+/*
+ * Blueprint reveal (M1), 1.2s. The head script adds .logo-intro on the first page view of a visit.
+ *   0.00–0.45  construction circles and 30° guides draw on the grid
+ *   0.25–0.75  logo strokes trace along them in --sky
+ *   0.70–1.00  gradient fill powers on
+ *   0.85–1.20  trace and guides fade, leaving the clean logo
+ * Then the 3D island assembles and the logo flies into its landmark (src/world/hero, ~0.9s).
+ * Keep REVEAL_MS in src/scripts/world.ts in sync.
+ */
+:global(.logo-intro) .draw .guides {
+  animation: logo-guides 1.2s linear forwards;
+}
+:global(.logo-intro) .draw .guide {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: logo-stroke 0.45s var(--ease-out) forwards;
+}
+:global(.logo-intro) .draw .guide:nth-child(2) {
+  animation-delay: 0.05s;
+}
+:global(.logo-intro) .draw .guide:nth-child(3) {
+  animation-delay: 0.1s;
+}
+:global(.logo-intro) .draw .guide:nth-child(n + 4) {
+  animation-duration: 0.35s;
+  animation-delay: 0.07s;
+}
+
+:global(.logo-intro) .draw .trace {
+  animation: logo-trace 1.2s linear forwards;
+}
+:global(.logo-intro) .draw .line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: logo-stroke 0.48s var(--ease-in-out) 0.25s forwards;
+}
+:global(.logo-intro) .draw .line.c {
+  animation-delay: 0.3s;
+}
+
+:global(.logo-intro) .draw .fill {
+  opacity: 0;
+  animation: logo-power 0.3s linear 0.7s forwards;
+}
+
+@keyframes logo-stroke {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+/* Faint while drafting, gone by 1.2s. */
+@keyframes logo-guides {
+  0% {
+    opacity: 0.4;
+  }
+  60% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes logo-trace {
+  0%,
+  22% {
+    opacity: 0;
+  }
+  23%,
+  72% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* "Powers on": a quick flicker, then full. */
+@keyframes logo-power {
+  0% {
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.6;
+  }
+  38% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(.logo-intro) .draw .guides,
+  :global(.logo-intro) .draw .trace {
+    animation: none;
+    opacity: 0;
+  }
+  :global(.logo-intro) .draw .fill {
+    animation: none;
+    opacity: 1;
+  }
+}

@@ -1,0 +1,37 @@
+.notice {
+  position: absolute;
+  top: var(--header-h);
+  left: 0;
+  width: 100%;
+  z-index: 51;
+  background: color-mix(in srgb, var(--coral) 85%, transparent);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--text-sm);
+  line-height: 1.4;
+}
+.inner {
+  padding-block: var(--s-2);
+  text-align: center;
+  color: var(--text);
+}
+.date {
+  margin-right: var(--s-2);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  color: var(--outline);
+}
+/* Padding grows the tap area to 44px without making the bar taller. */
+.inner a {
+  display: inline-block;
+  margin-left: var(--s-2);
+  padding-block: 12px;
+  margin-block: -12px;
+  font-weight: 600;
+  color: var(--outline);
+  white-space: nowrap;
+}
+@media (max-width: 480px) {
+  .notice {
+    font-size: var(--text-xs);
+  }
+}

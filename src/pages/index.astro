@@ -1,0 +1,37 @@
+---
+/**
+ * Home page. v3 "Journey down the valley" (docs/DESIGN_SPEC.md section 0): one
+ * illustrated scene per section (v3.1: the night sky holds the past photos), from the sunset over the valley down to the lakebed
+ * (the footer, in the layout). Sections are TSX components rendered to static HTML at
+ * build time (no hydration).
+ */
+import Base from '@layouts/Base.astro';
+import { Hero } from '@components/sections/Hero';
+import { About } from '@components/sections/About';
+import { Gallery } from '@components/sections/Gallery';
+import { ScheduleSection } from '@components/sections/ScheduleSection';
+import { Sponsors } from '@components/sections/Sponsors';
+import { GetInvolved } from '@components/sections/GetInvolved';
+import { Faq } from '@components/sections/Faq';
+---
+
+<Base>
+  <Hero />
+  <About />
+  <Gallery />
+  <ScheduleSection />
+  <Sponsors />
+  <GetInvolved />
+  <Faq />
+</Base>
+
+<script>
+  import { initBackdrop } from '../scripts/backdrop';
+  import { initGallery } from '../scripts/gallery';
+  import { initWorld } from '../scripts/world';
+  initGallery();
+  initBackdrop();
+  // v3 step 1: the Explore island is the illustrated picture (island.png). The 3D island
+  // mounts into About/Explore in step 2; scene animations come in step 3.
+  void initWorld;
+</script>

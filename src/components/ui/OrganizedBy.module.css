@@ -1,0 +1,50 @@
+/* "Organized by [CSCU logo]": quiet text, the logo carries the weight. */
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--tap);
+  color: var(--text-soft);
+  text-decoration: none;
+  border-radius: var(--r-sm);
+}
+.link img {
+  display: block;
+  flex: none;
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.link:hover img {
+  transform: translateY(-2px);
+}
+.link:hover .label {
+  color: var(--text);
+}
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.lg {
+  gap: 14px;
+}
+.lg .label {
+  font-size: 18px;
+}
+
+/* Header on phones: only the logo shows; the words stay for screen readers. */
+@media (max-width: 899px) {
+  .logoOnly .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .link:hover img {
+    transform: none;
+  }
+}

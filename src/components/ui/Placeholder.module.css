@@ -1,0 +1,43 @@
+.placeholder {
+  display: flex;
+  align-items: center;
+  gap: var(--s-5);
+  max-width: 40rem;
+  padding: var(--s-5);
+}
+.mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 64px;
+  height: 74px;
+  color: var(--sky);
+}
+.hex {
+  position: absolute;
+  inset: 0;
+  fill: none;
+  stroke: color-mix(in srgb, var(--sky) 60%, transparent);
+  stroke-width: 1.5;
+  stroke-dasharray: 5 6;
+}
+.title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.text {
+  margin-top: var(--s-1);
+  max-width: 48ch;
+  color: var(--text-muted);
+}
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  color: var(--sky);
+}

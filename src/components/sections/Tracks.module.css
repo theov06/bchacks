@@ -1,0 +1,62 @@
+/* Tracks (v3 scene 3): night sky. Layout box: see .scene-section in global.css. */
+.tracks {
+  --accent: var(--sun);
+  --scene-base: var(--scene-tracks);
+  --art-h: 980;
+  --pad-top: 110px;
+  --spacer: 260;
+  --ph-pad-top: 200px; /* the moon sits above the heading */
+  --ph-spacer: 160px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-top: 44px;
+}
+.card {
+  overflow: hidden;
+}
+.band {
+  display: grid;
+  place-items: center;
+  height: 86px;
+  background: var(--tone);
+  border-bottom: var(--stroke);
+}
+.band path {
+  fill: var(--cream);
+  stroke: var(--outline);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.body {
+  padding: 22px;
+}
+.body h3 {
+  font-size: 21px;
+  font-weight: 800;
+  color: var(--card-ink);
+}
+.body p {
+  margin-top: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--card-muted);
+}
+.body .prize {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+@media (max-width: 759px) {
+  .tracks {
+    /* The moon band drops its own sky; the section paints the night gradient (Scene.module.css). */
+    background: linear-gradient(var(--scene-tracks), var(--scene-tracks-mid) 60%, var(--scene-tracks-end));
+  }
+  .cards {
+    margin-top: 36px;
+  }
+}

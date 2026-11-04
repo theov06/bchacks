@@ -1,0 +1,158 @@
+/*
+ * Scene sizing (v3). Every scene was drawn for a 1440px-wide page (--art-w × --art-h).
+ *
+ * Desktop and tablet (≥760px): the art scales with the page width, up to 1920px, and keeps
+ * its exact proportions. It sits on the section's bottom edge (About: top edge). Sections
+ * set min-height to the art's height and reserve room at the bottom for the busy part
+ * (their own CSS), so text never sits on it. Wider than 1920px the art keeps scaling with
+ * the width and its plain top is trimmed.
+ *
+ * Phones (<760px): never the shrunk 1440 art. Each scene shows a band of --ph-h pixels,
+ * centred on its key feature (--ph-fx = that feature's x as a fraction of the art width).
+ */
+.scene {
+  --art-w: 1440;
+  --art-scale: calc(min(100vw, 1920px) / 1440);
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.scene > svg {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: block;
+  width: 100%;
+  /* The global svg { max-width: 100% } would squeeze the wider phone crops to the screen. */
+  max-width: none;
+  height: calc(var(--art-h) * min(100vw, 1920px) / 1440);
+}
+.scene[data-anchor='top'] > svg {
+  top: 0;
+  bottom: auto;
+}
+
+.scene[data-scene='about'] {
+  --art-h: 1500;
+}
+.scene[data-scene='tracks'] {
+  --art-h: 980;
+}
+.scene[data-scene='schedule'] {
+  --art-h: 1100;
+}
+.scene[data-scene='sponsors'] {
+  --art-h: 1200;
+}
+.scene[data-scene='involved'] {
+  --art-h: 1000;
+}
+.scene[data-scene='faq'] {
+  --art-h: 1300;
+}
+.scene[data-scene='footer'] {
+  --art-h: 900;
+}
+
+/*
+ * Schedule: from 1100px the trestle's three lanterns are drawn by the section itself,
+ * under the real card columns (ScheduleSection), so the art's own lanterns hide.
+ */
+@media (min-width: 1100px) {
+  .scene[data-scene='schedule'] :global(.lantern) {
+    display: none;
+  }
+}
+
+@media (max-width: 759px) {
+  .scene > svg {
+    --ph-w: calc(var(--ph-h) * var(--art-w) / var(--art-h));
+    width: var(--ph-w);
+    height: var(--ph-h);
+    /* Centre the key feature, but never leave a gap at either screen edge. */
+    left: clamp(calc(100% - var(--ph-w)), calc(50% - var(--ph-fx) * var(--ph-w)), 0px);
+  }
+
+  /*
+   * Top-anchored bands (About's aurora, Tracks' moon): the section paints the sky
+   * gradient itself (its CSS), the band drops its own background and fades out at the
+   * bottom, so there's no seam where the band ends.
+   */
+  .scene[data-phone='top'] > svg {
+    top: 0;
+    bottom: auto;
+    -webkit-mask-image: linear-gradient(#000 60%, transparent);
+    mask-image: linear-gradient(#000 60%, transparent);
+  }
+  .scene[data-phone='top'] :global([data-bg]) {
+    display: none;
+  }
+
+  /* About: the aurora fills the top of the section. */
+  .scene[data-scene='about'] {
+    --ph-h: 900px;
+    --ph-fx: 0.5;
+  }
+  /* Tracks: the moon in the top-right corner, above the heading. */
+  .scene[data-scene='tracks'] {
+    --ph-h: 720px;
+    --ph-fx: 0.733;
+  }
+  /* Schedule: the whole trestle with its three lanterns and the cyclist. */
+  .scene[data-scene='schedule'] {
+    --ph-h: 480px;
+    --ph-fx: 0.5;
+  }
+  /* Sponsors: the winery barn and its orchard. */
+  .scene[data-scene='sponsors'] {
+    --ph-h: 700px;
+    --ph-fx: 0.67;
+  }
+  /* Get involved: the sailboats, the paddleboarder and the quail on the dock. */
+  .scene[data-scene='involved'] {
+    --ph-h: 600px;
+    --ph-fx: 0.753;
+  }
+  /* FAQ: the deep shadow and the kokanee. The light rays need the full height, so they go. */
+  .scene[data-scene='faq'] {
+    --ph-h: 640px;
+    --ph-fx: 0.5;
+  }
+  .scene[data-scene='faq'] :global(#u-rays) {
+    display: none;
+  }
+  /* Footer: the diving quail on the lakebed. */
+  .scene[data-scene='footer'] {
+    --ph-h: 520px;
+    --ph-fx: 0.67;
+  }
+}
+
+/*
+ * 3D backdrop layer (v3.1 spec 0.8.6, src/world/backdrop/): a 2D canvas the shared renderer
+ * copies into, laid over the art. It fades in once its first frame is drawn
+ * (data-backdrop="live") while the SVG's own copies of those objects fade out.
+ */
+.scene :global(.backdrop-3d) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.9s var(--ease-out);
+}
+.scene[data-backdrop='live'] :global(.backdrop-3d) {
+  opacity: 1;
+}
+.scene[data-scene='hero'] :global(#d-clouds),
+.scene[data-scene='hero'] :global(#d-details) > path[stroke='#2a2470'] {
+  transition: opacity 0.9s var(--ease-out);
+}
+/* Hero: the clouds and the five birds are now drawn in 3D. */
+.scene[data-scene='hero'][data-backdrop='live'] :global(#d-clouds),
+.scene[data-scene='hero'][data-backdrop='live'] :global(#d-details) > path[stroke='#2a2470'] {
+  opacity: 0;
+}

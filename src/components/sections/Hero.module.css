@@ -1,0 +1,244 @@
+/*
+ * Hero: sunset over the valley (v3 scene 1, docs/bchacks-design-reference-v3).
+ * Copy on the left; the scene (inlined SVG, src/components/ui/Scene) fills the hero from
+ * the bottom and never rises behind the copy. No island: it lives in About/Explore.
+ */
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  overflow: hidden;
+  margin-top: calc(-1 * var(--header-h));
+  background: var(--scene-hero);
+}
+/*
+ * Keeps stars and sparkles out of the header band (logo, nav, Apply). A blur, not a
+ * fill: the sky behind the header isn't always plain navy (very wide screens show a
+ * lighter part of it), so a blur hides the tiny stars without leaving a patch. It
+ * covers only the header's content width and fades out at every edge.
+ */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: -1;
+  width: min(100%, calc(var(--max) + 2 * var(--gutter) + 96px));
+  height: calc(var(--header-h) + 64px);
+  translate: -50% 0;
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  -webkit-mask-image:
+    linear-gradient(#000 calc(100% - 32px), transparent),
+    linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(#000 calc(100% - 32px), transparent),
+    linear-gradient(90deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+  mask-composite: intersect;
+  pointer-events: none;
+}
+
+/*
+ * Layout grid: copy in row 1; the scenery row (row 2) starts 32px under the buttons
+ * minus the height of the art above its first hill (--hill), so the hills never rise
+ * behind the copy.
+ */
+.inner {
+  --pad-bottom: 72px;
+  --hill: 330px; /* phones: art is 680px tall; its highest hill over the copy is ~330px down */
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  --row-gap: 24px;
+  row-gap: var(--row-gap);
+  padding-top: calc(var(--header-h) + var(--notice-h) + 40px);
+  padding-bottom: var(--pad-bottom);
+}
+.scene {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  position: relative;
+  z-index: -2;
+  display: flex;
+  flex-direction: column;
+  /* Full bleed from inside the container; the row runs down to the hero's bottom edge. */
+  margin: calc(32px - var(--row-gap) - var(--hill)) calc(50% - 50vw) calc(-1 * var(--pad-bottom) - 1px);
+  /* The art never sizes the hero: the row is whatever space is left. */
+  contain: size;
+  pointer-events: none;
+}
+/* margin-top:auto pins the art to the bottom when the row is taller than it; when it's
+   shorter, the auto margin collapses to 0 and the art hangs down past the hero's edge.
+   (.scene .scenery outranks the Scene component's own absolute positioning.) */
+.scene .scenery {
+  position: relative;
+  inset: auto;
+  z-index: auto;
+  flex: none;
+  width: 100%;
+  height: 680px;
+  margin-top: auto;
+}
+.scene .scenery > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Copy ---------- */
+.copy {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  max-width: 620px;
+  translate: -90px 0;
+}
+/*
+ * Calm zone: a soft dusk-navy pool behind the copy so nothing bright (pink hills,
+ * clouds, hill lines) sits behind the headline, facts or buttons. It fades to
+ * transparent exactly at its box edges (closest-side), so there's no seam.
+ */
+.copy::before {
+  content: '';
+  position: absolute;
+  inset: -30% -25% -22% -60vw;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side at 64% 52%,
+    color-mix(in srgb, var(--bg-hero) 88%, transparent),
+    color-mix(in srgb, var(--bg-hero) 80%, transparent) 55%,
+    color-mix(in srgb, var(--bg-hero) 40%, transparent) 82%,
+    transparent
+  );
+}
+.copy :global(.eyebrow) {
+  --accent: var(--ice);
+  margin-bottom: 20px;
+}
+.liveDot {
+  order: -1;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--coral);
+  border: 2px solid var(--outline);
+  animation: live-pulse 1.6s var(--ease-in-out) infinite;
+}
+@keyframes live-pulse {
+  50% {
+    transform: scale(1.35);
+  }
+}
+.title {
+  --accent: var(--sun);
+  font-size: var(--display);
+  line-height: 0.98;
+  font-family: "Silkscreen", sans-serif;
+  font-weight: 400;
+  font-synthesis: none;
+  letter-spacing: -0.09em;
+}
+.line {
+  display: block;
+  white-space: nowrap;
+}
+.lede {
+  max-width: 30em;
+  margin-top: 24px;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--text-soft);
+}
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 32px;
+  margin-top: 32px;
+}
+.fact dt {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.fact dd {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  color: var(--white);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 36px;
+}
+
+/* ---------- Wave into About ---------- */
+.wave {
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 56px;
+  fill: var(--scene-hero-wave);
+  pointer-events: none;
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+  .inner {
+    --hill: 300px; /* tablets see the tall peaks in the middle of the art */
+  }
+}
+
+/*
+ * Desktop: the hero fills one screen (never taller than the viewport, capped on very
+ * tall ones). Type and spacing shrink on short screens so the copy and a band of scenery
+ * fit. The art is scaled by width (16:9), so --hill is in vw.
+ */
+@media (min-width: 1024px) {
+  .hero {
+    --hero-h: min(100svh, 1200px);
+    min-height: var(--hero-h);
+  }
+  .inner {
+    --pad-bottom: 64px;
+    --hill: calc(100vw * 735 / 1920);
+    --row-gap: 0px;
+    padding-top: calc(var(--header-h) + var(--notice-h) + clamp(20px, 14svh - 64px, 96px));
+  }
+  .scene .scenery {
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+  .copy :global(.eyebrow) {
+    margin-bottom: clamp(12px, 2.4svh, 20px);
+  }
+  .title {
+    font-size: min(var(--display), 9svh);
+  }
+  .lede {
+    margin-top: clamp(14px, 2.6svh, 24px);
+    font-size: clamp(17px, 2.1svh, 19px);
+  }
+  .facts {
+    margin-top: clamp(18px, 3.4svh, 32px);
+  }
+  .actions {
+    margin-top: clamp(20px, 3.8svh, 36px);
+  }
+}
+/* Between 1200 and 1599px the buttons sit over the lower, left part of the hills. */
+@media (min-width: 1200px) and (max-width: 1599px) {
+  .inner {
+    --hill: calc(100vw * 780 / 1920);
+  }
+}

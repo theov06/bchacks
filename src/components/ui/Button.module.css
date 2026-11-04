@@ -1,0 +1,106 @@
+/*
+ * Sticker buttons (docs/bchacks-design-reference): rounded, 3px ink border, solid
+ * offset shadow. Hover lifts the button and grows the shadow; pressing sinks it
+ * into its shadow. Touch targets are at least 46px tall.
+ */
+.btn {
+  --fill: var(--sky);
+  --btn-h: 52px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: var(--btn-h);
+  max-width: 100%;
+  padding: 10px 24px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 17px;
+  line-height: 1.1;
+  text-decoration: none;
+  border-radius: var(--r-sm);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+.lg {
+  --btn-h: 56px;
+  padding: 10px 28px;
+  font-size: 18px;
+  border-radius: var(--r-md);
+}
+.sm {
+  --btn-h: 46px;
+  padding: 8px 20px;
+  font-size: 16px;
+}
+.icon {
+  flex: none;
+  transition: transform var(--dur) var(--ease-out);
+}
+.btn:hover .icon {
+  transform: translateX(3px);
+}
+
+/* Primary: coloured fill, ink text and border, offset shadow. */
+.primary {
+  background: var(--fill);
+  color: var(--outline);
+  border: var(--stroke);
+  box-shadow: var(--shadow-sm);
+}
+.lg.primary {
+  box-shadow: 5px 5px 0 var(--outline);
+}
+.primary:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--outline);
+}
+.primary:active {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--outline);
+}
+.sky {
+  --fill: var(--sky);
+}
+.sun {
+  --fill: var(--sun);
+}
+.aqua {
+  --fill: var(--aqua);
+}
+.coral {
+  --fill: var(--coral);
+}
+
+/* Secondary: light outline on dark backgrounds. */
+.secondary {
+  color: var(--white);
+  border: 3px solid var(--white);
+  font-weight: 700;
+}
+.secondary:hover {
+  background: color-mix(in srgb, var(--white) 12%, transparent);
+}
+
+/* Outline: ink outline on cream cards. */
+.outline {
+  color: var(--outline);
+  border: var(--stroke);
+  font-weight: 700;
+  --focus: var(--outline);
+}
+.outline:hover {
+  background: color-mix(in srgb, var(--outline) 8%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .btn:hover,
+  .btn:active,
+  .btn:hover .icon {
+    transform: none;
+  }
+}
