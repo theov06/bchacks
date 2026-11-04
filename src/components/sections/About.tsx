@@ -85,6 +85,7 @@ export function About() {
               href={h.href}
               data-side={h.side}
               data-spot={h.spot}
+              aria-label={`${h.label}, ${h.section}`}
               style={{ '--x': `${h.x}%`, '--y': `${h.y}%`, '--tone': `var(--${h.tone})` } as StyleVars}
             >
               <span className={styles.dot} aria-hidden="true" />
@@ -101,7 +102,7 @@ export function About() {
 
         <nav className={styles.spotList} aria-label="Explore the island">
           {explore.hotspots.map((h) => (
-            <a key={h.href} href={h.href} style={{ '--tone': `var(--${h.tone})` } as StyleVars}>
+            <a key={h.href} href={h.href} aria-label={`${h.label}, ${h.section}`} style={{ '--tone': `var(--${h.tone})` } as StyleVars}>
               <span className={styles.pip} aria-hidden="true" />
               {h.label}
             </a>

@@ -25,10 +25,14 @@ export const about = {
   ],
 };
 
-export type HotspotTone = 'sun' | 'pink' | 'sky' | 'mint' | 'coral';
+/** Colour tokens for the hotspot dots, one per place (tokens.css). */
+export type HotspotTone = 'sun' | 'wood' | 'vine' | 'sky' | 'faq-edge';
 
 export interface Hotspot {
+  /** The place, shown on the chip. */
   label: string;
+  /** The section it jumps to; read out by screen readers after the place, not shown. */
+  section: string;
   href: string;
   tone: HotspotTone;
   /** Dot position over the island picture, in % of its width/height (design reference). */
@@ -37,7 +41,7 @@ export interface Hotspot {
   /** Which side of the dot the chip sits on. */
   side: 'left' | 'right';
   /** The spot on the island it points at (for the 3D glow in step 2). */
-  spot: 'lake' | 'bridge' | 'tent' | 'campfire' | 'quail';
+  spot: 'sky' | 'bridge' | 'vineyard' | 'lake' | 'water';
 }
 
 export const explore = {
@@ -50,10 +54,13 @@ export const explore = {
   /** Shown only while the interactive 3D island is running (step 2). */
   islandHint: 'Drag to tilt · tap the quail',
   hotspots: [
-    { label: 'Gallery · night sky', href: '#gallery', tone: 'sun', x: 49.6, y: 73.5, side: 'right', spot: 'lake' },
-    { label: 'Schedule · Myra Canyon', href: '#schedule', tone: 'pink', x: 38, y: 60, side: 'left', spot: 'bridge' },
-    { label: 'Sponsors · the wineries', href: '#sponsors', tone: 'sky', x: 63.5, y: 64, side: 'right', spot: 'tent' },
-    { label: 'Get involved · the lake', href: '#involved', tone: 'mint', x: 21.4, y: 69, side: 'left', spot: 'campfire' },
-    { label: 'FAQ · below the surface', href: '#faq', tone: 'coral', x: 31.5, y: 81, side: 'left', spot: 'quail' },
+    // Dot colours follow each place: starlight, canyon wood, vines, lake sky blue, deep water.
+    // Each dot sits on its place in island.png: the sky above the mountain, the trestle bridge,
+    // the vineyard rows, the lake, and the water around the island.
+    { label: 'Night sky', section: 'Gallery', href: '#gallery', tone: 'sun', x: 22, y: 4, side: 'right', spot: 'sky' },
+    { label: 'Myra Canyon', section: 'Schedule', href: '#schedule', tone: 'wood', x: 36, y: 63, side: 'left', spot: 'bridge' },
+    { label: 'The wineries', section: 'Sponsors', href: '#sponsors', tone: 'vine', x: 72, y: 80, side: 'right', spot: 'vineyard' },
+    { label: 'Okanagan Lake', section: 'Get involved', href: '#involved', tone: 'sky', x: 45, y: 73, side: 'right', spot: 'lake' },
+    { label: 'Below the surface', section: 'FAQ', href: '#faq', tone: 'faq-edge', x: 8, y: 90, side: 'right', spot: 'water' },
   ] satisfies Hotspot[],
 };
