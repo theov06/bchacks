@@ -100,7 +100,7 @@ export const site = {
      * emails the team (scripts/sponsor-sheet/Code.gs; setup in README "Sponsor form").
      * The team sends the deck by hand. Empty: the form falls back to Netlify Forms.
      */
-    sheetUrl: 'https://script.google.com/macros/s/AKfycbzHhkitYqpuDs9MJkvC_RglqWg9Zv2z0MVEfrzrpOeZdnWVQLPgkPGqAKNCjxgDuV0l5A/exec',
+    sheetUrl: 'https://script.google.com/macros/s/AKfycbx3pkRc8aVfjEtDBtDJQgXlZ9Xw7RYHSPhziHmqUhlzRDYFpwGUwTEsJ44Q8QfGCoxtgg/exec',
   },
   discordUrl: 'https://discord.gg/bchacks', // CONFIRM
 

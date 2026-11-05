@@ -1,4 +1,4 @@
-import { postNetlifyForm } from './netlifyForm';
+import { postNetlifyForm, postToSheet } from './netlifyForm';
 
 /** Email sign-up forms ([data-signup]): inline validation, then POST or demo confirmation. */
 export function initSignup(root: ParentNode = document): void {
@@ -31,7 +31,9 @@ export function initSignup(root: ParentNode = document): void {
           say('error', `Sign-ups aren't switched on yet. Email ${contact} and we'll add you to the list.`);
           return;
         }
-        if (form.hasAttribute('data-netlify-form')) {
+        if (form.dataset.sheet) {
+          await postToSheet(form, form.dataset.sheet);
+        } else if (form.hasAttribute('data-netlify-form')) {
           await postNetlifyForm(form);
         } else {
           const res = await fetch(form.action, {

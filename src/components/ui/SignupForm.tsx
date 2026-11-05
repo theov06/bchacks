@@ -9,13 +9,15 @@ export interface SignupFormProps {
 }
 
 /**
- * Email capture ("notify" Netlify form, or site.notifyFormAction if set). With neither,
+ * Email capture. Goes to site.notifyFormAction if set, else the team's Google Sheet (the
+ * sponsor form's web app, "Notify list" tab), else the "notify" Netlify form. With none,
  * it tells the visitor to email the team instead of pretending to subscribe them.
  * Behaviour: src/scripts/signup.ts.
  */
 export function SignupForm({ id, label }: SignupFormProps) {
-  const netlify = !site.notifyFormAction && site.netlifyForms;
-  const action = site.notifyFormAction || (netlify ? '/' : undefined);
+  const sheet = site.notifyFormAction ? '' : site.sponsorForm.sheetUrl;
+  const netlify = !site.notifyFormAction && !sheet && site.netlifyForms;
+  const action = site.notifyFormAction || sheet || (netlify ? '/' : undefined);
   const inputId = `${id}-email`;
   const msgId = `${id}-msg`;
   return (
@@ -26,12 +28,14 @@ export function SignupForm({ id, label }: SignupFormProps) {
       data-signup=""
       data-demo={action ? undefined : 'true'}
       data-contact={site.contactEmail}
+      data-sheet={sheet || undefined}
       noValidate
       {...(netlify ? { name: 'notify', 'data-netlify': 'true', 'netlify-honeypot': 'bot-field', 'data-netlify-form': '' } : {})}
     >
-      {netlify && (
+      {sheet && <input type="hidden" name="form" value="notify" />}
+      {(netlify || sheet) && (
         <>
-          <input type="hidden" name="form-name" value="notify" />
+          {netlify && <input type="hidden" name="form-name" value="notify" />}
           <div className={styles.honeypot} aria-hidden="true">
             <label>
               Leave this empty
