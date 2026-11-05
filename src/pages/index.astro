@@ -28,10 +28,7 @@ import { Faq } from '@components/sections/Faq';
 <script>
   import { initBackdrop } from '../scripts/backdrop';
   import { initGallery } from '../scripts/gallery';
-  import { initWorld } from '../scripts/world';
   initGallery();
+  // The section backdrops and the Explore 3D island share one renderer (backdrop.ts loads both).
   initBackdrop();
-  // v3 step 1: the Explore island is the illustrated picture (island.png). The 3D island
-  // mounts into About/Explore in step 2; scene animations come in step 3.
-  void initWorld;
 </script>

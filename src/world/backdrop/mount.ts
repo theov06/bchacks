@@ -56,5 +56,17 @@ export function mountBackdrops(tier: Tier, software = false): BackdropEngine | n
       onStop: () => art.removeAttribute('data-backdrop'),
     });
   }
+
+  // The 3D island in About/Explore loads and builds right away, in the background, so it's
+  // ready by the time Explore is reached. The engine only draws it while it's on screen.
+  const stage = document.querySelector<HTMLElement>('[data-world-slot]');
+  if (stage) {
+    import('../island/islandLayer')
+      .then(({ mountIsland }) => mountIsland(engine, stage))
+      .catch((err) => {
+        console.warn('[backdrop] 3D island failed to load.', err);
+        stage.dataset.world = 'fallback';
+      });
+  }
   return engine;
 }

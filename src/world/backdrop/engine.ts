@@ -44,6 +44,8 @@ export interface LayerOptions {
   resolution?: number;
   /** Called once, right after the layer's first frame is drawn. */
   onFirstFrame?: () => void;
+  /** Keep this layer when a slow device sheds the others (it has no still fallback shown). */
+  keep?: boolean;
   onStop?: () => void;
 }
 
@@ -126,6 +128,11 @@ export class BackdropEngine {
     document.addEventListener('visibilitychange', () => (document.hidden ? this.pause() : this.kick()));
   }
 
+  /** False once the engine has stopped (slow device); nothing more can be added then. */
+  get running(): boolean {
+    return !this.stopped;
+  }
+
   /** Adds a section's 3D layer. The canvas goes into `box`, right after the scene art. */
   add(section: HTMLElement, box: HTMLElement, backdrop: Backdrop, opts: LayerOptions | (() => void) = {}): HTMLCanvasElement {
     if (typeof opts === 'function') opts = { onStop: opts };
@@ -185,10 +192,10 @@ export class BackdropEngine {
     return { w: Math.round(w), h: Math.round(h) };
   }
 
-  private measure(l: Layer) {
+  private measure(l: Layer, force = false) {
     const { w, h } = l.opts.svg ? this.fitSvg(l, l.opts.svg) : { w: Math.max(1, Math.round(l.box.clientWidth)), h: Math.max(1, Math.round(l.box.clientHeight)) };
-    if (w === l.w && h === l.h && !l.opts.svg) return;
-    const sizeChanged = w !== l.w || h !== l.h;
+    if (w === l.w && h === l.h && !l.opts.svg && !force) return;
+    const sizeChanged = w !== l.w || h !== l.h || force;
     l.w = w;
     l.h = h;
     const res = this.dpr * (l.opts.resolution ?? 1);
@@ -255,13 +262,38 @@ export class BackdropEngine {
     if (!this.stopped) this.kick(true);
   };
 
-  /** Several slow frames in a row (after warm-up): stop and give every layer back to its SVG. */
+  /**
+   * About 1.5 s of choppy frames (after warm-up) and the engine steps down, one step at a time:
+   * 1. render at a lower resolution; 2. hand every section back to its still SVG, except layers
+   * marked `keep` (the Explore island, which has no picture to fall back to); 3. with no kept
+   * layer left, stop. A calm still scene beats a stuttering one.
+   */
   private watchdog(work: number, dt: number) {
     if (this.clock < 2 * ANIMATION_SPEED) return; // ~2 real seconds of warm-up
     const slow = work > SLOW_MS || dt * 1000 > SLOW_MS * 1.5;
     this.slowTime = slow ? this.slowTime + dt : Math.max(0, this.slowTime - dt * 0.5);
-    // About 1.5 s of choppy animation and it's off: a calm still scene beats a stuttering one.
-    if (this.slowTime > 1.5) this.stop();
+    if (this.slowTime <= 1.5) return;
+    this.slowTime = 0;
+    if (this.dpr > 1) {
+      console.info('[backdrop] frames ran slow: rendering the 3D at a lower resolution.');
+      this.dpr = 1;
+      this.layers.forEach((l) => this.measure(l, true));
+    } else if (this.layers.some((l) => !l.opts.keep)) {
+      console.info('[backdrop] frames still slow: the section scenes go back to their still art; the island keeps going.');
+      for (const l of this.layers.filter((x) => !x.opts.keep)) this.remove(l);
+      if (!this.layers.length) this.stop();
+    } else if (!this.layers.length) {
+      this.stop();
+    }
+  }
+
+  /** Takes one layer out (its section shows its still art again). */
+  private remove(l: Layer) {
+    this.io.unobserve(l.section);
+    this.ro.unobserve(l.box);
+    l.canvas.remove();
+    l.opts.onStop?.();
+    this.layers = this.layers.filter((x) => x !== l);
   }
 
   /** Removes every layer (the SVG scenes are still there underneath) and frees the GPU. */

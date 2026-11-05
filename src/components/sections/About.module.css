@@ -153,6 +153,40 @@
   height: auto;
 }
 
+/*
+ * The 3D island layer (src/world/island/islandLayer.tsx) lies over the picture and under the
+ * hotspots, and replaces the picture on its first frame. Drags tilt the island sideways;
+ * vertical swipes keep scrolling the page.
+ */
+.stage :global(.backdrop-3d) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+}
+/* Drag area over the island (the 3D layer itself reaches higher, into the text above). */
+.stage [data-island-hit] {
+  position: absolute;
+  inset: 0;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.stage [data-island-hit]:active {
+  cursor: grabbing;
+}
+.stage[data-world='ready'] :global(.backdrop-3d) {
+  opacity: 1;
+}
+/*
+ * The 2D island picture is switched off for now: only the 3D island shows. The picture stays
+ * in the page, invisible, so it still sizes the stage and screen readers still get its alt text.
+ */
+.island img {
+  opacity: 0;
+}
+
 /* Hotspot: a dot on the spot plus a cream chip; the whole thing is one link. */
 .hotspot {
   position: absolute;
@@ -214,26 +248,6 @@
   border-radius: 50%;
   background: var(--tone);
   border: 2px solid var(--outline);
-}
-
-/* Only while the 3D island runs (step 2). */
-.hint {
-  position: absolute;
-  top: 2%;
-  right: 4%;
-  display: none;
-  padding: 8px 14px;
-  background: var(--cream);
-  color: var(--card-ink);
-  border: 2px solid var(--outline);
-  border-radius: var(--r-pill);
-  box-shadow: 3px 3px 0 var(--outline);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.06em;
-}
-.stage:is([data-world='assemble'], [data-world='ready']) .hint {
-  display: block;
 }
 
 /* Phones: the chips become a list of buttons below the island. */

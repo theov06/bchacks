@@ -51,8 +51,6 @@ export const explore = {
   lede: 'Each spot is a stop on the journey down this page. Tap one to jump there, drag to tilt the island, and say hi to the quail.',
   islandAlt:
     'The BCHacks island under the northern lights: a lake with a bridge, a pink hack tent, vineyards, a campfire, the quail mascot and the glowing BCHacks logo on the mountain',
-  /** Shown only while the interactive 3D island is running (step 2). */
-  islandHint: 'Drag to tilt · tap the quail',
   hotspots: [
     // Dot colours follow each place: starlight, canyon wood, vines, lake sky blue, deep water.
     // Each dot sits on its place in island.png: the sky above the mountain, the trestle bridge,

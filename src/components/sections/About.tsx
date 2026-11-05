@@ -15,8 +15,8 @@ const ticks = ['aqua', 'sun', 'pink', 'mint'] as const;
  * A calm band with the event name and "Organized by [CSCU]" sits above the aurora (v3.1).
  * The aurora fills the top; the About copy and the "You belong here" card start below it.
  * Explore shows the island on an oval of lake water with five hotspot links down the page
- * (a list of buttons on phones). Step 1: the island is the illustrated picture; the 3D
- * island mounts into [data-world-slot] in step 2 and the picture stays as its fallback.
+ * (a list of buttons on phones). The 3D island (src/world/island/islandLayer.tsx) draws over
+ * the picture once it's running; the picture stays as its fallback.
  */
 export function About() {
   return (
@@ -95,9 +95,6 @@ export function About() {
               </span>
             </a>
           ))}
-          <p className={styles.hint} aria-hidden="true">
-            {explore.islandHint}
-          </p>
         </div>
 
         <nav className={styles.spotList} aria-label="Explore the island">

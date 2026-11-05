@@ -166,11 +166,13 @@ export interface LandmarkProps {
   bare?: boolean;
   /** Replace the gradient with flat white (shape check mask). */
   mask?: boolean;
+  /** Brightness of the logo gradient (1 = as designed; higher where there is no bloom pass). */
+  glow?: number;
 }
 
-export function Landmark({ height = 1.6, animate = true, bare = false, mask = false }: LandmarkProps) {
+export function Landmark({ height = 1.6, animate = true, bare = false, mask = false, glow = 1 }: LandmarkProps) {
   const geo = useLogoGeometry();
-  const mat = useMemo(() => (mask ? new THREE.MeshBasicMaterial({ color: '#ffffff' }) : makeLogoMaterial()), [mask]);
+  const mat = useMemo(() => (mask ? new THREE.MeshBasicMaterial({ color: '#ffffff' }) : makeLogoMaterial(glow)), [mask, glow]);
   const logo = useRef<THREE.Group>(null);
   const halo = useRef<THREE.Mesh>(null);
   const haloTex = useGlowTexture();
@@ -178,7 +180,7 @@ export function Landmark({ height = 1.6, animate = true, bare = false, mask = fa
     if (!animate || !logo.current) return;
     const t = sceneTime(clock.elapsedTime);
     logo.current.position.y = (bare ? 0 : PEDESTAL_TOP + 0.08) + Math.sin(t * 1.1) * 0.025;
-    if (mat instanceof THREE.ShaderMaterial) mat.uniforms.uGlow.value = 1.0 + Math.sin(t * 1.6) * 0.04;
+    if (mat instanceof THREE.ShaderMaterial) mat.uniforms.uGlow.value = glow * (1.0 + Math.sin(t * 1.6) * 0.04);
     if (halo.current) (halo.current.material as THREE.MeshBasicMaterial).opacity = 0.2 + Math.sin(t * 1.6) * 0.03;
   });
   return (
