@@ -4,8 +4,8 @@
  * the hills. Works in the hero art's own coordinates (viewBox 1920×1080, y down), so
  * everything starts exactly where the SVG drew it and the swap is invisible.
  *
- * Stays out of the copy: clouds live in the sky right of x≈1000 and above the hills; they
- * grow in at the left edge of that zone and drift right, off the art.
+ * Stays out of the copy: clouds drift only rightward of where the art drew them (all right of
+ * x≈960, above the hills) and ease back, so they never leave the picture.
  */
 import * as THREE from 'three';
 import type { Backdrop, LayerContext } from './engine';
@@ -21,7 +21,8 @@ interface CloudDef {
   color: string;
   /** Depth: 0 = the art's plane; negative = farther (smaller parallax, slower). */
   z: number;
-  speed: number; // art units per second
+  /** How far right of its spot (art units) the cloud drifts before easing back. */
+  drift: number;
   tier?: 'high';
 }
 const CLOUDS: CloudDef[] = [
@@ -30,21 +31,21 @@ const CLOUDS: CloudDef[] = [
     base: [1156, 360, 189, 34],
     color: '#f2a6c2',
     z: 0,
-    speed: 9,
+    drift: 170,
   },
   {
     puffs: [[1508, 258, 29], [1537, 240, 37], [1570, 234, 44], [1604, 247, 32], [1628, 260, 22]],
     base: [1498, 250, 140, 25],
     color: '#e99bc4',
     z: -140,
-    speed: 6,
+    drift: 120,
   },
   {
     puffs: [[976, 527, 24], [1000, 511, 32], [1029, 507, 37], [1057, 518, 27], [1077, 529, 18]],
     base: [967, 520, 119, 21],
     color: '#f7b3a6',
     z: -70,
-    speed: 7,
+    drift: 110,
   },
   // Extra far, small clouds on the high tier (the art's palette, scaled-down puffs).
   {
@@ -52,7 +53,7 @@ const CLOUDS: CloudDef[] = [
     base: [1372, 146, 76, 14],
     color: '#e99bc4',
     z: -260,
-    speed: 4,
+    drift: 90,
     tier: 'high',
   },
   {
@@ -60,15 +61,17 @@ const CLOUDS: CloudDef[] = [
     base: [1781, 394, 88, 15],
     color: '#f2a6c2',
     z: -200,
-    speed: 5,
+    drift: 45,
     tier: 'high',
   },
 ];
 
-/** Clouds drift right inside this band of the art and wrap; they grow in at its left edge. */
-const ZONE_LEFT = 1010;
-const ZONE_RIGHT = 2080;
-const GROW = 70; // art units over which a cloud puffs up after wrapping
+/**
+ * Clouds drift slowly to the right of their spot in the art and ease back again, so they never
+ * leave the picture and never reach the copy on the left (they only ever move rightward of
+ * where the art drew them). One full there-and-back takes DRIFT_PERIOD seconds of scene time.
+ */
+const DRIFT_PERIOD = 50;
 
 /** Birds from hero.svg #d-details: two little flocks (home x, y, span). */
 const FLOCKS: { home: [number, number]; birds: [number, number, number][] }[] = [
@@ -123,7 +126,8 @@ function softDisc(): THREE.CanvasTexture {
   const g = c.getContext('2d')!;
   const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
   grad.addColorStop(0, 'rgba(255,255,255,1)');
-  grad.addColorStop(1, 'rgba(255,255,255,0)');
+  // Fade the colour as well as the alpha: alphaMap reads the green channel, map reads alpha.
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
   g.fillStyle = grad;
   g.fillRect(0, 0, 64, 64);
   const t = new THREE.CanvasTexture(c);
@@ -133,10 +137,8 @@ function softDisc(): THREE.CanvasTexture {
 
 interface Cloud {
   group: THREE.Group;
-  /** Home x of the cloud's left edge (art units), current offset, width. */
+  /** The art's x for the cloud's left edge. */
   left: number;
-  width: number;
-  offset: number;
   def: CloudDef;
 }
 
@@ -184,7 +186,7 @@ export function createHeroBackdrop(tier: 'high' | 'medium'): Backdrop {
 
     group.position.set(wx(bx), wy(by), def.z);
     scene.add(group);
-    return { group, left: bx, width: bw, offset: 0, def };
+    return { group, left: bx, def };
   });
 
   // ---------- Birds (flat silhouettes in the art's ink, hinged wings) ----------
@@ -250,22 +252,13 @@ export function createHeroBackdrop(tier: 'high' | 'medium'): Backdrop {
     const py = ctx.pointer.y;
     const scrollLift = Math.min(1.5, Math.max(0, ctx.scroll)) * 60;
 
-    for (const c of clouds) {
-      c.offset += c.def.speed * dt;
-      const span = ZONE_RIGHT - ZONE_LEFT + c.width;
-      // Wrap: when a cloud has drifted off the right edge it comes back at the zone's left.
-      let x = c.left + c.offset;
-      if (x > ZONE_RIGHT) {
-        c.offset -= span;
-        x = c.left + c.offset;
-      }
-      // Clouds that wrapped re-enter at ZONE_LEFT; until they're fully inside, they puff up.
-      const enter = x < ZONE_LEFT ? 0 : Math.min(1, (x - ZONE_LEFT) / GROW);
-      const grow = c.offset < 0 ? THREE.MathUtils.smoothstep(enter, 0, 1) : 1;
+    for (const [i, c] of clouds.entries()) {
+      // 0 → drift → 0, smoothly (a cosine), each cloud at its own point in the cycle.
+      const phase = (t / DRIFT_PERIOD) * Math.PI * 2 + i * 1.9;
+      const x = c.left + ((1 - Math.cos(phase)) / 2) * c.def.drift;
       const depth = 1 + c.def.z / 400; // 1 near … 0.35 far
-      c.group.visible = grow > 0.01;
       const bob = Math.sin(t * 0.35 + c.left) * 3;
-      place(c.group, Math.max(x, ZONE_LEFT) + px * 14 * depth, c.def.base[1] + bob + py * 8 * depth - scrollLift * depth, c.def.z, Math.max(0.01, grow));
+      place(c.group, x + px * 14 * depth, c.def.base[1] + bob + py * 8 * depth - scrollLift * depth, c.def.z);
     }
 
     for (const b of birds) {

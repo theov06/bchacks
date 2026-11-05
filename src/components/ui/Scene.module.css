@@ -156,3 +156,29 @@
 .scene[data-scene='hero'][data-backdrop='live'] :global(#d-details) > path[stroke='#2a2470'] {
   opacity: 0;
 }
+
+/*
+ * The other sections (spec 0.8.6): while a section's 3D layer is live, the SVG's own copies
+ * of the objects it now draws fade out. (About's aurora and the night sky's stars only add to
+ * the art, so nothing there is hidden.)
+ */
+.scene[data-scene='schedule'] :global(.cyclist),
+.scene[data-scene='sponsors'] :global(.tree),
+.scene[data-scene='involved'] :global(.boat),
+.scene[data-scene='involved'] :global(.buoy),
+.scene[data-scene='faq'] :global(.fish),
+.scene[data-scene='faq'] :global(.bubble),
+.scene[data-scene='faq'] :global(#u-deep-shadow),
+.scene[data-scene='footer'] :global(.bubble) {
+  transition: opacity 0.9s var(--ease-out);
+}
+.scene[data-scene='schedule'][data-backdrop='live'] :global(.cyclist),
+.scene[data-scene='sponsors'][data-backdrop='live'] :global(.tree),
+.scene[data-scene='involved'][data-backdrop='live'] :global(.boat),
+.scene[data-scene='involved'][data-backdrop='live'] :global(.buoy),
+.scene[data-scene='faq'][data-backdrop='live'] :global(.fish),
+.scene[data-scene='faq'][data-backdrop='live'] :global(.bubble),
+.scene[data-scene='faq'][data-backdrop='live'] :global(#u-deep-shadow),
+.scene[data-scene='footer'][data-backdrop='live'] :global(.bubble) {
+  opacity: 0;
+}

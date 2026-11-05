@@ -7,7 +7,14 @@ Every 3D object is built in code (no downloaded models), so there is nothing thi
 | Section | Objects | Source |
 |---|---|---|
 | Hero | Puffy toon clouds, flapping birds and their shadows | Built in code from the hero art's own shapes and colours ([src/world/backdrop/hero.ts](../src/world/backdrop/hero.ts)) |
-| About / Explore | The island (step 2, not mounted yet) | Built in code ([src/world/island/](../src/world/island/)) |
+| About | Aurora curtains (shader) | Built in code ([about.ts](../src/world/backdrop/about.ts)) |
+| Gallery | Stars in three depth layers, shooting star | Built in code ([nightsky.ts](../src/world/backdrop/nightsky.ts)) |
+| Schedule | Two cyclists on the trestle | Built in code from the art's cyclist ([canyon.ts](../src/world/backdrop/canyon.ts)) |
+| Sponsors | Orchard trees, bird flock | Built in code from the art's trees ([wineries.ts](../src/world/backdrop/wineries.ts)) |
+| Get involved | Sailboats, paddleboarder, buoys, reflections, wakes | Built in code from the art's boats ([lake.ts](../src/world/backdrop/lake.ts)) |
+| FAQ | Kokanee schools (boids), bubbles, the deep-shadow | Built in code from the art's fish ([underwater.ts](../src/world/backdrop/underwater.ts)) |
+| Footer | Bubbles from the diving quail's helmet | Built in code ([lakebed.ts](../src/world/backdrop/lakebed.ts)) |
+| About / Explore | The island (not mounted yet) | Built in code ([src/world/island/](../src/world/island/)) |
 
 Library: [three.js](https://threejs.org/) (MIT).
 

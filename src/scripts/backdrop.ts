@@ -66,6 +66,7 @@ export function initBackdrop(): void {
     return;
   }
   let tier: 'high' | 'medium' = choice;
+  let software = false;
 
   const start = () => {
     const gl = forced ? { ok: true, renderer: 'skipped (?backdrop)' } : hardwareGl();
@@ -76,10 +77,11 @@ export function initBackdrop(): void {
       }
       debug(`software renderer (${gl.renderer}): using the lighter tier. Turn on graphics acceleration for the full one.`);
       tier = 'medium';
+      software = true;
     }
     debug(`loading the ${tier} tier (renderer: ${gl.renderer})`);
     import('../world/backdrop/mount')
-      .then(({ mountBackdrops }) => mountBackdrops(tier))
+      .then(({ mountBackdrops }) => mountBackdrops(tier, software))
       .catch((err) => console.warn('[backdrop] 3D failed to load; the illustrated scenes stay as they are.', err));
   };
   const go = () => {

@@ -23,6 +23,28 @@ export interface LayerContext {
   pointer: THREE.Vector2;
   /** How far the section has scrolled through the viewport: 0 = its top at the viewport top. */
   scroll: number;
+  /**
+   * The part of the scene's art (viewBox units, y down) this layer covers, for layers fitted
+   * to an SVG (LayerOptions.svg). Lets a scene place objects in the art's own coordinates.
+   */
+  art: { left: number; top: number; width: number; height: number };
+  /** Device pixels per CSS pixel this layer renders at (for point sizes). */
+  res: number;
+}
+
+export interface LayerOptions {
+  /** Fit the layer over this SVG's visible area (as cropped by its preserveAspectRatio). */
+  svg?: SVGSVGElement;
+  /**
+   * With `svg`: only cover this band of the art (viewBox units, y down), where the scene's
+   * objects actually move. Fewer pixels to draw and copy every frame.
+   */
+  region?: { x0: number; y0: number; x1: number; y1: number };
+  /** Render resolution relative to the device pixel ratio (soft scenes can go lower). */
+  resolution?: number;
+  /** Called once, right after the layer's first frame is drawn. */
+  onFirstFrame?: () => void;
+  onStop?: () => void;
 }
 
 export interface Backdrop {
@@ -44,10 +66,17 @@ interface Layer {
   visible: boolean;
   w: number;
   h: number;
-  onStop?: () => void;
+  art: LayerContext['art'];
+  opts: LayerOptions;
+  drawn: boolean;
 }
 
 const SLOW_MS = 45; // average frame time that counts as "can't keep up"
+/**
+ * How fast every backdrop animation runs (1 = the speeds written in each scene file).
+ * One knob for the whole page: drifting, flapping, pedalling, swimming, twinkling.
+ */
+export const ANIMATION_SPEED = 2.5;
 
 export class BackdropEngine {
   readonly renderer: THREE.WebGLRenderer;
@@ -55,15 +84,25 @@ export class BackdropEngine {
   private raf = 0;
   private last = 0;
   private clock = 0;
+  /** Eased pointer the scenes read; it glides after the real one, so parallax never twitches. */
   private pointer = new THREE.Vector2();
+  private pointerTarget = new THREE.Vector2();
   private dpr: number;
   private io: IntersectionObserver;
   private ro: ResizeObserver;
-  private slowFrames = 0;
+  /** Seconds of slow frames lately (decays while frames are fine). */
+  private slowTime = 0;
   private stopped = false;
 
-  constructor(readonly tier: Tier) {
-    this.dpr = Math.min(window.devicePixelRatio || 1, tier === 'high' ? 2 : 1.5);
+  /**
+   * @param software the browser draws WebGL on the CPU (GPU acceleration off): render at 1×
+   * (never the high-density 1.5–2×), which keeps it sharp and still smooth (30–48 fps measured).
+   */
+  constructor(
+    readonly tier: Tier,
+    software = false,
+  ) {
+    this.dpr = software ? 1 : Math.min(window.devicePixelRatio || 1, tier === 'high' ? 2 : 1.5);
     this.renderer = new THREE.WebGLRenderer({ alpha: true, antialias: tier === 'high', powerPreference: 'low-power' });
     this.renderer.setPixelRatio(1); // sizes below are already in device pixels
     this.renderer.setClearColor(0x000000, 0);
@@ -77,23 +116,36 @@ export class BackdropEngine {
         }
         this.kick();
       },
-      { rootMargin: '80px 0px' },
+      { rootMargin: '200px 0px' },
     );
     this.ro = new ResizeObserver(() => this.layers.forEach((l) => this.measure(l)));
 
     if (tier === 'high' && matchMedia('(pointer: fine)').matches) {
-      addEventListener('pointermove', (e) => this.pointer.set((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1), { passive: true });
+      addEventListener('pointermove', (e) => this.pointerTarget.set((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1), { passive: true });
     }
     document.addEventListener('visibilitychange', () => (document.hidden ? this.pause() : this.kick()));
   }
 
   /** Adds a section's 3D layer. The canvas goes into `box`, right after the scene art. */
-  add(section: HTMLElement, box: HTMLElement, backdrop: Backdrop, onStop?: () => void): HTMLCanvasElement {
+  add(section: HTMLElement, box: HTMLElement, backdrop: Backdrop, opts: LayerOptions | (() => void) = {}): HTMLCanvasElement {
+    if (typeof opts === 'function') opts = { onStop: opts };
     const canvas = document.createElement('canvas');
     canvas.className = 'backdrop-3d';
     canvas.setAttribute('aria-hidden', 'true');
     box.append(canvas);
-    const layer: Layer = { section, box, canvas, ctx2d: canvas.getContext('2d')!, backdrop, visible: false, w: 0, h: 0, onStop };
+    const layer: Layer = {
+      section,
+      box,
+      canvas,
+      ctx2d: canvas.getContext('2d')!,
+      backdrop,
+      visible: false,
+      w: 0,
+      h: 0,
+      art: { left: 0, top: 0, width: 1, height: 1 },
+      opts,
+      drawn: false,
+    };
     this.layers.push(layer);
     this.measure(layer);
     this.io.observe(section);
@@ -103,17 +155,47 @@ export class BackdropEngine {
 
   private context(l: Layer): LayerContext {
     const r = l.section.getBoundingClientRect();
-    return { tier: this.tier, width: l.w, height: l.h, pointer: this.pointer, scroll: -r.top / Math.max(1, innerHeight) };
+    return { tier: this.tier, width: l.w, height: l.h, pointer: this.pointer, scroll: -r.top / Math.max(1, innerHeight), art: l.art, res: this.dpr * (l.opts.resolution ?? 1) };
+  }
+
+  /**
+   * Fits the canvas over the part of the SVG that's actually visible in its box, and works out
+   * which part of the art (viewBox units) that is, following the SVG's own slice/meet crop.
+   */
+  private fitSvg(l: Layer, svg: SVGSVGElement) {
+    const box = l.box.getBoundingClientRect();
+    const s = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const par = svg.preserveAspectRatio.baseVal;
+    const scale = Math.max(s.width / vb.width, s.height / vb.height); // slice
+    const ox = (s.width - vb.width * scale) / 2; // xMid
+    const oy = par.align >= SVGPreserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMAX ? s.height - vb.height * scale : par.align >= SVGPreserveAspectRatio.SVG_PRESERVEASPECTRATIO_XMINYMID ? (s.height - vb.height * scale) / 2 : 0;
+    // Visible part of the SVG inside the box (the box clips it), narrowed to the region.
+    const rg = l.opts.region;
+    const toX = (ax: number) => s.left + ox + (ax - vb.x) * scale;
+    const toY = (ay: number) => s.top + oy + (ay - vb.y) * scale;
+    const x0 = Math.max(s.left, box.left, rg ? toX(rg.x0) : -Infinity);
+    const y0 = Math.max(s.top, box.top, rg ? toY(rg.y0) : -Infinity);
+    const x1 = Math.min(s.right, box.right, rg ? toX(rg.x1) : Infinity);
+    const y1 = Math.min(s.bottom, box.bottom, rg ? toY(rg.y1) : Infinity);
+    const w = Math.max(1, x1 - x0);
+    const h = Math.max(1, y1 - y0);
+    Object.assign(l.canvas.style, { left: `${x0 - box.left}px`, top: `${y0 - box.top}px`, width: `${w}px`, height: `${h}px` });
+    l.art = { left: (x0 - s.left - ox) / scale + vb.x, top: (y0 - s.top - oy) / scale + vb.y, width: w / scale, height: h / scale };
+    return { w: Math.round(w), h: Math.round(h) };
   }
 
   private measure(l: Layer) {
-    const w = Math.max(1, Math.round(l.box.clientWidth));
-    const h = Math.max(1, Math.round(l.box.clientHeight));
-    if (w === l.w && h === l.h) return;
+    const { w, h } = l.opts.svg ? this.fitSvg(l, l.opts.svg) : { w: Math.max(1, Math.round(l.box.clientWidth)), h: Math.max(1, Math.round(l.box.clientHeight)) };
+    if (w === l.w && h === l.h && !l.opts.svg) return;
+    const sizeChanged = w !== l.w || h !== l.h;
     l.w = w;
     l.h = h;
-    l.canvas.width = Math.round(w * this.dpr);
-    l.canvas.height = Math.round(h * this.dpr);
+    const res = this.dpr * (l.opts.resolution ?? 1);
+    if (sizeChanged) {
+      l.canvas.width = Math.max(1, Math.round(w * res));
+      l.canvas.height = Math.max(1, Math.round(h * res));
+    }
     l.backdrop.resize(this.context(l));
     // The shared drawing buffer only ever needs to fit the largest layer.
     const maxW = Math.max(...this.layers.map((x) => x.canvas.width));
@@ -123,9 +205,15 @@ export class BackdropEngine {
     this.kick();
   }
 
-  private kick() {
+  /**
+   * Keeps the loop going. `continuing` = called from the end of a frame: the clock already
+   * holds that frame's timestamp, so it must not be reset. (Resetting it to "now", after the
+   * frame's work, made the next frame's time step negative on slow, software-rendered
+   * browsers, and everything briefly ran backwards.) Only a fresh start resets the clock.
+   */
+  private kick(continuing = false) {
     if (this.stopped || this.raf || document.hidden || !this.layers.some((l) => l.visible)) return;
-    this.last = performance.now();
+    if (!continuing) this.last = performance.now();
     this.raf = requestAnimationFrame(this.frame);
   }
 
@@ -136,7 +224,10 @@ export class BackdropEngine {
 
   private frame = (now: number) => {
     this.raf = 0;
-    const dt = Math.min(0.1, (now - this.last) / 1000);
+    // rAF timestamps can trail performance.now(): never let time step backwards.
+    const realDt = Math.min(0.1, Math.max(0, (now - this.last) / 1000));
+    const dt = realDt * ANIMATION_SPEED;
+    this.pointer.lerp(this.pointerTarget, 1 - Math.exp(-realDt * 3)); // ease, ~0.3 s to catch up
     this.last = now;
     this.clock += dt;
 
@@ -155,16 +246,22 @@ export class BackdropEngine {
       this.renderer.render(l.backdrop.scene, l.backdrop.camera);
       l.ctx2d.clearRect(0, 0, w, h);
       l.ctx2d.drawImage(this.renderer.domElement, 0, buffer.y - h, w, h, 0, 0, w, h);
+      if (!l.drawn) {
+        l.drawn = true;
+        l.opts.onFirstFrame?.();
+      }
     }
-    this.watchdog(performance.now() - start, dt);
-    if (!this.stopped) this.kick();
+    this.watchdog(performance.now() - start, realDt);
+    if (!this.stopped) this.kick(true);
   };
 
   /** Several slow frames in a row (after warm-up): stop and give every layer back to its SVG. */
   private watchdog(work: number, dt: number) {
-    if (this.clock < 3) return;
-    this.slowFrames = work > SLOW_MS || dt * 1000 > SLOW_MS * 2 ? this.slowFrames + 1 : Math.max(0, this.slowFrames - 1);
-    if (this.slowFrames > 45) this.stop();
+    if (this.clock < 2 * ANIMATION_SPEED) return; // ~2 real seconds of warm-up
+    const slow = work > SLOW_MS || dt * 1000 > SLOW_MS * 1.5;
+    this.slowTime = slow ? this.slowTime + dt : Math.max(0, this.slowTime - dt * 0.5);
+    // About 1.5 s of choppy animation and it's off: a calm still scene beats a stuttering one.
+    if (this.slowTime > 1.5) this.stop();
   }
 
   /** Removes every layer (the SVG scenes are still there underneath) and frees the GPU. */
@@ -175,7 +272,7 @@ export class BackdropEngine {
     this.ro.disconnect();
     for (const l of this.layers) {
       l.canvas.remove();
-      l.onStop?.();
+      l.opts.onStop?.();
     }
     this.layers = [];
     this.renderer.dispose();
