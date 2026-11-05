@@ -94,6 +94,11 @@ export class BackdropEngine {
   private ro: ResizeObserver;
   /** Seconds of slow frames lately (decays while frames are fine). */
   private slowTime = 0;
+  /**
+   * Seconds the watchdog looks away: a layer coming on screen or drawing its first frame
+   * causes a short, expected hiccup (e.g. a jump down the page), not a slow device.
+   */
+  private grace = 0;
   private stopped = false;
 
   /**
@@ -114,7 +119,10 @@ export class BackdropEngine {
       (entries) => {
         for (const e of entries) {
           const layer = this.layers.find((l) => l.section === e.target);
-          if (layer) layer.visible = e.isIntersecting;
+          if (layer) {
+            if (e.isIntersecting && !layer.visible) this.grace = Math.max(this.grace, 0.75);
+            layer.visible = e.isIntersecting;
+          }
         }
         this.kick();
       },
@@ -155,6 +163,13 @@ export class BackdropEngine {
     };
     this.layers.push(layer);
     this.measure(layer);
+    // Prepare the layer's shaders in the background now, not on its first frame on screen
+    // (several sections compiling mid-scroll made frames stall).
+    const idle = (cb: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 3000 }) : setTimeout(cb, 200));
+    idle(() => {
+      if (this.stopped) return;
+      this.renderer.compileAsync(backdrop.scene, backdrop.camera).catch(() => {});
+    });
     this.io.observe(section);
     this.ro.observe(box);
     return canvas;
@@ -255,6 +270,7 @@ export class BackdropEngine {
       l.ctx2d.drawImage(this.renderer.domElement, 0, buffer.y - h, w, h, 0, 0, w, h);
       if (!l.drawn) {
         l.drawn = true;
+        this.grace = Math.max(this.grace, 0.75);
         l.opts.onFirstFrame?.();
       }
     }
@@ -270,6 +286,10 @@ export class BackdropEngine {
    */
   private watchdog(work: number, dt: number) {
     if (this.clock < 2 * ANIMATION_SPEED) return; // ~2 real seconds of warm-up
+    if (this.grace > 0) {
+      this.grace -= dt;
+      return;
+    }
     const slow = work > SLOW_MS || dt * 1000 > SLOW_MS * 1.5;
     this.slowTime = slow ? this.slowTime + dt : Math.max(0, this.slowTime - dt * 0.5);
     if (this.slowTime <= 1.5) return;
