@@ -106,7 +106,7 @@ export const site = {
 
   social: [
     { label: 'Instagram', href: 'https://www.instagram.com/bchacks/', icon: 'instagram' }, // CONFIRM
-    // LinkedIn and Discord removed for now; add them back here when the links are ready.
+    // LinkedIn and Discord removed for now.
   ] as const,
 
   pastEditions: [

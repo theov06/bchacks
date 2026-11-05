@@ -116,13 +116,22 @@
   color: var(--text-muted);
 }
 
+/*
+ * Phones: a grid instead of the desktop row. (In a stacked flex column the desktop flex-basis
+ * values turned into heights: the brand block was 320px tall and the contact column 220px,
+ * leaving big empty gaps.) Brand and contact span the width; Event and Get involved sit
+ * side by side.
+ */
 @media (max-width: 759px) {
   .info {
-    flex-direction: column;
-    gap: 28px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 20px;
     margin-top: 64px;
   }
-  .col {
-    flex-basis: auto;
+  .brand,
+  .col:last-child {
+    grid-column: 1 / -1;
+    max-width: none;
   }
 }

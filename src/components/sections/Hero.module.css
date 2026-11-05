@@ -45,8 +45,12 @@
  * behind the copy.
  */
 .inner {
-  --pad-bottom: 72px;
   --hill: 330px; /* phones: art is 680px tall; its highest hill over the copy is ~330px down */
+  /*
+   * Phones and tablets: leave room under the buttons for the whole 680px art (hills, lake,
+   * boat), with its highest hill still ~32px below the buttons. Desktop sets its own value.
+   */
+  --pad-bottom: calc(680px - var(--hill) + 8px);
   position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -94,7 +98,6 @@
   grid-column: 1;
   grid-row: 1;
   max-width: 620px;
-  translate: -90px 0;
 }
 /*
  * Calm zone: a soft dusk-navy pool behind the copy so nothing bright (pink hills,
@@ -219,6 +222,11 @@
     height: auto;
     aspect-ratio: 16 / 9;
   }
+  /* Desktop: the copy sits 90px further left (the team's layout). Phones and tablets keep it
+     inside the page margins, or the start of every line is cut off. */
+  .copy {
+    translate: -90px 0;
+  }
   .copy :global(.eyebrow) {
     margin-bottom: clamp(12px, 2.4svh, 20px);
   }
@@ -240,5 +248,15 @@
 @media (min-width: 1200px) and (max-width: 1599px) {
   .inner {
     --hill: calc(100vw * 780 / 1920);
+  }
+}
+
+/*
+ * Phones: the uppercase pixel headline is wide ("VALLEY'S NEXT" is ~7.9× its font size), so
+ * it scales with the screen width and always fits between the page margins.
+ */
+@media (max-width: 599px) {
+  .title {
+    font-size: min(var(--display), 10.6vw);
   }
 }
