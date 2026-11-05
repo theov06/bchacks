@@ -1,14 +1,11 @@
-# Netlify (hosting, spec T9). Forms: Netlify Forms; the deck auto-email: netlify/functions.
-# Secrets (RESEND_API_KEY etc.) are set in the Netlify UI, never here. See README "Forms".
+# Netlify (hosting, spec T9). The sign-up form uses Netlify Forms; sponsor leads go to the
+# team's Google Sheet (README "Sponsor form").
 [build]
   command = "npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "24" # Astro needs >= 22.23.4; matches local dev
-
-[functions]
-  directory = "netlify/functions"
 
 # v3.1: the sponsor page became the pop-up form on the home page.
 [[redirects]]

@@ -73,27 +73,32 @@ The email sign-up posts to `notifyFormAction` (for example a Formspree or Mailch
 
 ## Deploy
 
-The site is hosted on **Netlify**. Import the repo; [netlify.toml](netlify.toml) sets the build (`npm run build` → `dist`), the functions folder and the `/sponsor` redirect, and every pull request gets a preview deploy.
+The site is hosted on **Netlify**. Import the repo; [netlify.toml](netlify.toml) sets the build (`npm run build` → `dist`) and the `/sponsor` redirect, and every pull request gets a preview deploy.
 
 ## Forms
 
-Both forms use [Netlify Forms](https://docs.netlify.com/forms/setup/), switched on by `netlifyForms: true` in `content/site.ts`:
+### Sponsor form → Google Sheet
 
-- `sponsor`: the sponsor pop-up (name, company, email).
-- `notify`: the email sign-up on `/apply` and in the hero off-season.
+The sponsor pop-up (name, company, email) saves each lead as a row in a Google Sheet owned by the CSCU Gmail account and emails the team. No database or server: a small Google Apps Script ([scripts/sponsor-sheet/Code.gs](scripts/sponsor-sheet/Code.gs)) receives the form. The team emails the deck by hand and ticks **Deck sent?** in the sheet.
 
-Locally (`npm run dev`) nothing is sent: the forms wait a moment and show their success message so you can check the flow.
+**One-time setup (signed in as the CSCU Gmail):**
 
-**One-time setup:**
+1. Create a Google Sheet, e.g. "BCHacks sponsor leads". *Share* it with the other team members' Gmail addresses as **Editor**.
+2. In the sheet: *Extensions → Apps Script*. Replace the editor's contents with [scripts/sponsor-sheet/Code.gs](scripts/sponsor-sheet/Code.gs). Edit `NOTIFY` (who gets an email per lead, comma-separated) and `SITE_URL` at the top. Save.
+3. Choose the `setup` function and press *Run*. Approve the permissions (Google warns that the app is unverified because it's your own script: *Advanced → Go to … (unsafe)*). This creates the "Sponsor leads" tab.
+4. *Deploy → New deployment → Web app*. Execute as: **Me**. Who has access: **Anyone**. Deploy and copy the web app URL (ends in `/exec`).
+5. Paste it into `sponsorForm.sheetUrl` in `content/site.ts`, then rebuild and deploy the site.
+6. Send a test from the site, check the new row and the email, then delete the test row.
 
-1. Netlify → *Forms* → enable form detection, then redeploy. Both forms appear after the deploy.
-2. *Forms → Form notifications → Email notification* for the `sponsor` form, to the sponsorship team's address. That's the team's copy of every lead. Spam is filtered (honeypot + Netlify's filter).
-3. The deck auto-email ([netlify/functions/submission-created.mjs](netlify/functions/submission-created.mjs)) sends each sponsor a link to the deck through [Resend](https://resend.com):
-   - Create a Resend account, add and verify the `bchacks.ca` domain (DNS records), and create an API key with sending access.
-   - Upload the deck PDF somewhere public (for example `public/bchacks-sponsorship-packet.pdf`).
-   - In Netlify → *Site configuration → Environment variables* add `RESEND_API_KEY`, `DECK_FROM` (e.g. `BCHacks <sponsor@bchacks.ca>`), `DECK_URL` (the PDF link) and optionally `DECK_REPLY_TO`. Never put these in the repo.
-   - Redeploy, send a test from the live site, and check the inbox and the function log.
-4. Once the deck email arrives, set `sponsorForm.autoEmail: true` in `content/site.ts`. Only then does the thank-you message promise the deck "in a few minutes".
+After changing the script later: *Deploy → Manage deployments → Edit → Version: New version*, so the same URL keeps working. Anyone who can edit the sheet can edit the script, so keep the editor list to the team. Free Gmail sends up to about 100 script emails a day.
+
+Without a `sheetUrl`, the sponsor form falls back to Netlify Forms (below).
+
+### Netlify Forms (sign-up)
+
+The email sign-up on `/apply` and in the hero off-season (`notify`) uses [Netlify Forms](https://docs.netlify.com/forms/setup/), switched on by `netlifyForms: true` in `content/site.ts`. Locally (`npm run dev`) it isn't sent: it waits a moment and shows its success message. (The sponsor form does send in dev once `sheetUrl` is set, so delete test rows.)
+
+**One-time setup:** Netlify → *Forms* → enable form detection, then redeploy. Add *Form notifications → Email notification* if the team wants an email per sign-up. Spam is filtered (honeypot + Netlify's filter).
 
 Set `siteUrl` in `content/site.ts` to the real domain first. Canonical links, social cards and the sitemap use it.
 
@@ -104,7 +109,7 @@ Search the repo for `CONFIRM` and replace every sample value. Also:
 - [ ] Real dates, deadline, venue building and apply URL
 - [ ] Only confirmed stats visible
 - [ ] Real tracks and prizes, sponsors and logos, form links
-- [ ] Netlify Forms + deck auto-email set up (see Forms); `sponsorForm.autoEmail` turned on
+- [ ] Sponsor Google Sheet set up and `sponsorForm.sheetUrl` filled in (see Forms); Netlify Forms enabled for the sign-up
 - [ ] `applyMode` switched to `open` when applications open
 - [ ] Sponsorship packet PDF added at `public/bchacks-sponsorship-packet.pdf` (or `sponsorPacketUrl` changed)
 - [ ] Code of conduct URL, MLH status, land acknowledgement wording checked with UBCO guidance

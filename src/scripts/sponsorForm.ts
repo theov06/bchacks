@@ -1,4 +1,4 @@
-import { postNetlifyForm } from './netlifyForm';
+import { postNetlifyForm, postToSheet } from './netlifyForm';
 
 /**
  * Sponsor pop-up (v3.1, spec 0.8.5). Any [data-sponsor-open] link opens the one
@@ -126,13 +126,12 @@ export function initSponsorForm(): void {
     }
     setSending(true);
     try {
-      await postNetlifyForm(form);
+      // The team's Google Sheet when it's set up (site.sponsorForm.sheetUrl), else Netlify Forms.
+      if (form.dataset.sheet) await postToSheet(form, form.dataset.sheet);
+      else await postNetlifyForm(form);
       const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim();
-      // Promise "a few minutes" only while the deck auto-email is set up (site.sponsorForm.autoEmail).
-      thanks.textContent =
-        dialog.dataset.autoEmail === 'true'
-          ? `Thanks, ${name}! We will send our sponsorship deck to your email in a few minutes.`
-          : `Thanks, ${name}! We'll email you our sponsorship deck shortly.`;
+      // The team sends the deck by hand, so no "in a few minutes".
+      thanks.textContent = `Thanks, ${name}! We'll email you our sponsorship deck shortly.`;
       form.hidden = true;
       success.hidden = false;
       thanks.focus();

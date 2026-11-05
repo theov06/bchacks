@@ -96,11 +96,11 @@ export const site = {
   /** Sponsor pop-up form (v3.1). */
   sponsorForm: {
     /**
-     * Turn on only once the deck auto-email works (netlify/functions/submission-created.mjs,
-     * RESEND_API_KEY etc. set in Netlify). Until then the thank-you message doesn't promise
-     * "in a few minutes".
+     * The Google Apps Script web app that saves each lead to the team's Google Sheet and
+     * emails the team (scripts/sponsor-sheet/Code.gs; setup in README "Sponsor form").
+     * The team sends the deck by hand. Empty: the form falls back to Netlify Forms.
      */
-    autoEmail: false,
+    sheetUrl: 'https://script.google.com/macros/s/AKfycbzHhkitYqpuDs9MJkvC_RglqWg9Zv2z0MVEfrzrpOeZdnWVQLPgkPGqAKNCjxgDuV0l5A/exec',
   },
   discordUrl: 'https://discord.gg/bchacks', // CONFIRM
 

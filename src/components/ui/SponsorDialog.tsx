@@ -22,17 +22,19 @@ const fields: Field[] = [
 /**
  * The sponsor pop-up (v3.1, spec 0.8.5), on every page. Every sponsor CTA carries
  * data-sponsor-open and opens it; without JavaScript those stay plain links.
- * The form is a Netlify form ("sponsor"), so it has to be in the pre-rendered HTML.
- * Behaviour: src/scripts/sponsorForm.ts.
+ * Leads go to the team's Google Sheet (site.sponsorForm.sheetUrl, scripts/sponsor-sheet/Code.gs);
+ * without a sheet URL it's a Netlify form ("sponsor"), which has to be in the pre-rendered HTML.
+ * Without JavaScript the form posts straight to the sheet. Behaviour: src/scripts/sponsorForm.ts.
  */
 export function SponsorDialog() {
+  const sheet = site.sponsorForm.sheetUrl;
+  const netlify = !sheet && site.netlifyForms;
   return (
     <dialog
       id="sponsor-dialog"
       className={styles.dialog}
       aria-labelledby="sponsor-dialog-title"
       data-sponsor-dialog=""
-      data-auto-email={site.sponsorForm.autoEmail ? 'true' : undefined}
       data-contact={site.sponsorEmail}
     >
       <div className={cx('on-cream', styles.panel)}>
@@ -50,17 +52,17 @@ export function SponsorDialog() {
           className={styles.form}
           name="sponsor"
           method="post"
-          action="/"
-          data-netlify="true"
-          netlify-honeypot="bot-field"
+          action={sheet || '/'}
+          {...(netlify ? { 'data-netlify': 'true', 'netlify-honeypot': 'bot-field' } : {})}
           data-sponsor-form=""
-          data-live={site.netlifyForms ? 'true' : undefined}
+          data-sheet={sheet || undefined}
+          data-live={sheet || netlify ? 'true' : undefined}
           noValidate
         >
-          <input type="hidden" name="form-name" value="sponsor" />
+          {netlify && <input type="hidden" name="form-name" value="sponsor" />}
           <p className={styles.lede}>We'll only use this to send you our sponsorship deck and follow up.</p>
 
-          {/* Honeypot: people never see it; bots that fill it in are dropped by Netlify. */}
+          {/* Honeypot: people never see it; bots that fill it in are dropped (by the sheet script or Netlify). */}
           <div className={styles.honeypot} aria-hidden="true">
             <label>
               Leave this empty

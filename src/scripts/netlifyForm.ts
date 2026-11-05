@@ -20,3 +20,24 @@ export async function postNetlifyForm(form: HTMLFormElement): Promise<void> {
   });
   if (!res.ok) throw new Error(`Form post failed: ${res.status}`);
 }
+
+/**
+ * Posts a form to the Google Apps Script web app behind the sponsor sheet
+ * (scripts/sponsor-sheet/Code.gs). A urlencoded POST is a "simple" cross-origin request (no
+ * preflight); Apps Script answers through a redirect that allows any origin, so the JSON
+ * reply can be read. `js=1` asks for JSON instead of the no-JavaScript thank-you page.
+ * This sends for real in dev too, so the sheet can be tested locally (delete test rows).
+ */
+export async function postToSheet(form: HTMLFormElement, url: string): Promise<void> {
+  const body = new URLSearchParams();
+  new FormData(form).forEach((value, key) => body.append(key, String(value)));
+  body.set('js', '1');
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: body.toString(),
+  });
+  if (!res.ok) throw new Error(`Sheet post failed: ${res.status}`);
+  const reply = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+  if (!reply?.ok) throw new Error(reply?.error ?? 'Sheet post failed');
+}
