@@ -79,7 +79,7 @@ export const site = {
   },
 
   // Links — CONFIRM
-  siteUrl: 'https://bchacks.ca', // CONFIRM domain (used for canonical + social cards)
+  siteUrl: 'https://bchacks.ca', // used for canonical + social cards
   applyUrl: 'https://forms.example.com/bchacks-2026-apply', // CONFIRM
   /** Form endpoint for the "Get notified" email sign-up. While empty, the form asks visitors to email contactEmail instead. */
   notifyFormAction: '',
