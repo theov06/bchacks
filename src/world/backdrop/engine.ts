@@ -126,7 +126,8 @@ export class BackdropEngine {
         }
         this.kick();
       },
-      { rootMargin: '200px 0px' },
+      // Start animating a section well before it's on screen, so it's already moving on arrival.
+      { rootMargin: '50% 0px' },
     );
     this.ro = new ResizeObserver(() => this.layers.forEach((l) => this.measure(l)));
 
@@ -165,10 +166,21 @@ export class BackdropEngine {
     this.measure(layer);
     // Prepare the layer's shaders in the background now, not on its first frame on screen
     // (several sections compiling mid-scroll made frames stall).
+    // Then draw its first frame in the background too, long before it's scrolled to: the
+    // section is already showing its 3D when it comes on screen, instead of fading it in then.
     const idle = (cb: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 3000 }) : setTimeout(cb, 200));
     idle(() => {
       if (this.stopped) return;
-      this.renderer.compileAsync(backdrop.scene, backdrop.camera).catch(() => {});
+      this.renderer
+        .compileAsync(backdrop.scene, backdrop.camera)
+        .catch(() => {})
+        .then(() =>
+          idle(() => {
+            if (this.stopped || layer.drawn || document.hidden) return;
+            this.measure(layer);
+            this.draw(layer, 0);
+          }),
+        );
     });
     this.io.observe(section);
     this.ro.observe(box);
@@ -254,29 +266,31 @@ export class BackdropEngine {
     this.clock += dt;
 
     const start = performance.now();
-    const buffer = this.renderer.getSize(new THREE.Vector2());
-    for (const l of this.layers) {
-      if (!l.visible) continue;
-      const w = l.canvas.width;
-      const h = l.canvas.height;
-      l.backdrop.update(this.clock, dt, this.context(l));
-      // Draw into the bottom-left w×h of the shared buffer, then copy that corner out.
-      this.renderer.setViewport(0, 0, w, h);
-      this.renderer.setScissor(0, 0, w, h);
-      this.renderer.setScissorTest(true);
-      this.renderer.clear();
-      this.renderer.render(l.backdrop.scene, l.backdrop.camera);
-      l.ctx2d.clearRect(0, 0, w, h);
-      l.ctx2d.drawImage(this.renderer.domElement, 0, buffer.y - h, w, h, 0, 0, w, h);
-      if (!l.drawn) {
-        l.drawn = true;
-        this.grace = Math.max(this.grace, 0.75);
-        l.opts.onFirstFrame?.();
-      }
-    }
+    for (const l of this.layers) if (l.visible) this.draw(l, dt);
     this.watchdog(performance.now() - start, realDt);
     if (!this.stopped) this.kick(true);
   };
+
+  /** Advances one layer by `dt` and draws it into its canvas (the first time, it goes live). */
+  private draw(l: Layer, dt: number) {
+    const w = l.canvas.width;
+    const h = l.canvas.height;
+    const buffer = this.renderer.getSize(new THREE.Vector2());
+    l.backdrop.update(this.clock, dt, this.context(l));
+    // Draw into the bottom-left w×h of the shared buffer, then copy that corner out.
+    this.renderer.setViewport(0, 0, w, h);
+    this.renderer.setScissor(0, 0, w, h);
+    this.renderer.setScissorTest(true);
+    this.renderer.clear();
+    this.renderer.render(l.backdrop.scene, l.backdrop.camera);
+    l.ctx2d.clearRect(0, 0, w, h);
+    l.ctx2d.drawImage(this.renderer.domElement, 0, buffer.y - h, w, h, 0, 0, w, h);
+    if (!l.drawn) {
+      l.drawn = true;
+      this.grace = Math.max(this.grace, 0.75);
+      l.opts.onFirstFrame?.();
+    }
+  }
 
   /**
    * About 1.5 s of choppy frames (after warm-up) and the engine steps down, one step at a time:
