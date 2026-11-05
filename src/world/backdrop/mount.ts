@@ -59,14 +59,27 @@ export function mountBackdrops(tier: Tier, software = false): BackdropEngine | n
 
   // The 3D island in About/Explore loads and builds right away, in the background, so it's
   // ready by the time Explore is reached. The engine only draws it while it's on screen.
+  // Phones hide the island (About.module.css, max-width 759px), so it isn't loaded there; it
+  // loads if the screen becomes wide enough to show it (e.g. a tablet turned sideways).
   const stage = document.querySelector<HTMLElement>('[data-world-slot]');
   if (stage) {
-    import('../island/islandLayer')
-      .then(({ mountIsland }) => mountIsland(engine, stage))
-      .catch((err) => {
-        console.warn('[backdrop] 3D island failed to load.', err);
-        stage.dataset.world = 'fallback';
-      });
+    const phone = matchMedia('(max-width: 759px)');
+    const load = () =>
+      import('../island/islandLayer')
+        .then(({ mountIsland }) => mountIsland(engine, stage))
+        .catch((err) => {
+          console.warn('[backdrop] 3D island failed to load.', err);
+          stage.dataset.world = 'fallback';
+        });
+    if (!phone.matches) load();
+    else {
+      const wider = () => {
+        if (phone.matches) return;
+        phone.removeEventListener('change', wider);
+        load();
+      };
+      phone.addEventListener('change', wider);
+    }
   }
   return engine;
 }

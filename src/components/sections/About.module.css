@@ -250,8 +250,9 @@
   border: 2px solid var(--outline);
 }
 
-/* Phones: the chips become a list of buttons below the island. */
-.spotList {
+/* Phones only: the postcards, and the phone heading. Hidden on wider screens. */
+.cards,
+.phoneOnly {
   display: none;
 }
 
@@ -286,33 +287,148 @@
   .stage {
     margin-top: 24px;
   }
-  .hotspot {
+  /* No island on phones: its picture and 3D layer are hidden and never loaded. */
+  .stage,
+  .wideOnly {
     display: none;
   }
-  .spotList {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 520px;
-    margin: 40px auto 0;
+  .phoneOnly {
+    display: grid;
   }
-  .spotList a {
+  p.phoneOnly {
+    display: block;
+  }
+
+  /*
+   * Postcards: a row of cards that scrolls sideways and snaps to each one. The row runs to the
+   * screen edges (it cancels the container gutter) and the next card peeks in from the right.
+   */
+  .cards {
+    display: block;
+    margin: 28px calc(-1 * var(--gutter)) 0;
+  }
+  .cards .track {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--gutter);
+    /* Room for the sticker shadow and the focus ring, which overflow would clip. */
+    padding: 6px var(--gutter) 18px;
+    scrollbar-width: none;
+  }
+  .track::-webkit-scrollbar {
+    display: none;
+  }
+  .track li {
+    flex: 0 0 min(78%, 320px);
+    scroll-snap-align: start;
+  }
+  .card {
     --focus: var(--sun);
     display: flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 52px;
-    padding: 0 18px;
-    background: var(--cream);
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: var(--r-xl);
     color: var(--card-ink);
-    border: var(--stroke);
-    border-radius: 16px;
-    box-shadow: var(--shadow-sm);
-    font-weight: 800;
     text-decoration: none;
   }
-  .spotList .pip {
-    width: 14px;
-    height: 14px;
+  .card:focus-visible {
+    outline-offset: 2px;
+  }
+  .card:active {
+    transform: translate(2px, 2px);
+    box-shadow: 4px 4px 0 var(--outline);
+  }
+  .photo {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 2;
+    border-bottom: var(--stroke);
+    background: var(--tone);
+  }
+  .photo picture {
+    display: contents;
+  }
+  .photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  /* "Stop 1" tag on the picture: cream, with a dot in the stop's colour (ink text passes AA on cream). */
+  .stopNo {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 8px;
+    background: var(--cream);
+    border: 2px solid var(--outline);
+    border-radius: var(--r-pill);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--outline);
+  }
+  .stopNo::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--tone);
+    border: 2px solid var(--outline);
+  }
+  .caption {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 72px;
+    padding: 12px 18px;
+  }
+  .place {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+    font-weight: 800;
+    font-size: 18px;
+    line-height: 1.25;
+  }
+  .section {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--card-muted);
+  }
+  .caption :global(.icon) {
+    flex: none;
+  }
+
+  /* Which card is in view (src/scripts/postcards.ts). */
+  .dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--white) 35%, transparent);
+    transition:
+      width var(--dur-fast) var(--ease-out),
+      background-color var(--dur-fast) var(--ease-out);
+  }
+  .dots span[data-active='true'] {
+    width: 22px;
+    border-radius: var(--r-pill);
+    background: var(--aqua);
   }
 }

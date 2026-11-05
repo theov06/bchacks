@@ -49,6 +49,12 @@ export const explore = {
   heading: 'Explore the island.',
   highlight: 'the island.',
   lede: 'Each spot is a stop on the journey down this page. Tap one to jump there, drag to tilt the island, and say hi to the quail.',
+  /** Phones show the stops as swipeable postcards instead of the island, so they get their own heading and lede. */
+  phone: {
+    heading: 'Explore the journey.',
+    highlight: 'the journey.',
+    lede: 'Swipe through the stops on the way down this page. Tap one to jump there.',
+  },
   islandAlt:
     'The BCHacks island under the northern lights: a lake with a bridge, a pink hack tent, vineyards, a campfire, the quail mascot and the glowing BCHacks logo on the mountain',
   hotspots: [

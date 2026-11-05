@@ -7,6 +7,9 @@ import { Scene } from '../ui/Scene';
 import { SectionHead } from '../ui/SectionHead';
 import styles from './About.module.css';
 
+/** A 1×1 transparent GIF, for the postcard pictures on screens that hide them. */
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
 /** Tick colours for "You belong here", in order (design reference). */
 const ticks = ['aqua', 'sun', 'pink', 'mint'] as const;
 
@@ -14,8 +17,8 @@ const ticks = ['aqua', 'sun', 'pink', 'mint'] as const;
  * About + Explore (#about, #explore): northern lights over the island (v3 scene 2).
  * A calm band with the event name and "Organized by [CSCU]" sits above the aurora (v3.1).
  * The aurora fills the top; the About copy and the "You belong here" card start below it.
- * Explore shows the island on an oval of lake water with five hotspot links down the page
- * (a list of buttons on phones). The 3D island (src/world/island/islandLayer.tsx) draws over
+ * Explore shows the island on an oval of lake water with five hotspot links down the page.
+ * Phones skip the island: the five stops become swipeable postcards instead. The 3D island (src/world/island/islandLayer.tsx) draws over
  * the picture once it's running; the picture stays as its fallback.
  */
 export function About() {
@@ -56,8 +59,17 @@ export function About() {
         </div>
 
         <div id="explore" className={styles.exploreHead}>
-          <SectionHead id="explore-title" eyebrow={explore.eyebrow} title={explore.heading} highlight={explore.highlight} />
-          <p className={styles.exploreLede}>{explore.lede}</p>
+          <SectionHead id="explore-title" eyebrow={explore.eyebrow} title={explore.heading} highlight={explore.highlight} className={styles.wideOnly} />
+          <p className={cx(styles.exploreLede, styles.wideOnly)}>{explore.lede}</p>
+          {/* Phones: no island, so the heading talks about the journey (the trail below). */}
+          <SectionHead
+            id="explore-title-phone"
+            eyebrow={explore.eyebrow}
+            title={explore.phone.heading}
+            highlight={explore.phone.highlight}
+            className={styles.phoneOnly}
+          />
+          <p className={cx(styles.exploreLede, styles.phoneOnly)}>{explore.phone.lede}</p>
         </div>
 
         <div className={styles.stage} data-world-slot="">
@@ -97,13 +109,44 @@ export function About() {
           ))}
         </div>
 
-        <nav className={styles.spotList} aria-label="Explore the island">
-          {explore.hotspots.map((h) => (
-            <a key={h.href} href={h.href} aria-label={`${h.label}, ${h.section}`} style={{ '--tone': `var(--${h.tone})` } as StyleVars}>
-              <span className={styles.pip} aria-hidden="true" />
-              {h.label}
-            </a>
-          ))}
+        {/*
+          Phones: the island is hidden and the stops become swipeable postcards, each with a
+          crop of that stop's scene (public/images/explore/, made by scripts/scenes/postcards.mjs).
+          Without JavaScript it's still a scrollable row of links; src/scripts/postcards.ts adds the dots.
+        */}
+        <nav className={styles.cards} aria-label="Explore the journey" data-postcards="">
+          <ol role="list" className={styles.track}>
+            {explore.hotspots.map((h, i) => (
+              <li key={h.href} style={{ '--tone': `var(--${h.tone})` } as StyleVars}>
+                <a className={cx('sticker', styles.card)} href={h.href} aria-label={`${h.label}, ${h.section}`}>
+                  <span className={styles.photo}>
+                    {/* Only phones show the cards, so only phones get the picture; wider screens get a 1px blank. */}
+                    <picture>
+                      <source media="(max-width: 759px)" srcSet={`/images/explore/${h.spot}.webp`} type="image/webp" />
+                      <img src={BLANK} alt="" width={640} height={427} loading="lazy" decoding="async" />
+                    </picture>
+                    <span className={styles.stopNo} aria-hidden="true">
+                      Stop {i + 1}
+                    </span>
+                  </span>
+                  <span className={styles.caption}>
+                    <span className={styles.place}>
+                      {h.label}
+                      <span className={styles.section} aria-hidden="true">
+                        {h.section}
+                      </span>
+                    </span>
+                    <Icon name="arrow" size={20} />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+          <div className={styles.dots} aria-hidden="true">
+            {explore.hotspots.map((h, i) => (
+              <span key={h.href} data-dot="" data-active={i === 0 ? 'true' : undefined} />
+            ))}
+          </div>
         </nav>
       </div>
     </section>
