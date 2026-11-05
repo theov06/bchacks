@@ -35,7 +35,7 @@ export const faq: FaqItem[] = [
   },
   {
     question: 'Do I need a team or an idea?',
-    answer: `No. Come solo and team up at the event, or bring friends. Teams of up to ${teamSize}.`, // CONFIRM team size (content/about.ts)
+    answer: `No. Come solo and team up at the event, or bring friends. Teams of up to ${teamSize}.`,
   },
   {
     question: "I've never coded. Can I still come?",

@@ -4,7 +4,7 @@
  */
 
 /** Team size limit. Shown in "You belong here". CONFIRM before launch. */
-export const teamSize = '[4]'; // CONFIRM team size
+export const teamSize = '4';
 
 export const about = {
   eyebrow: 'About BCHacks',
