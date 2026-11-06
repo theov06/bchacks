@@ -8,7 +8,7 @@ dist/
 *.zip
 # Local tool cache (machine-specific paths)
 .impeccable/hook.cache.json
-# Local environment / secrets (Netlify holds the real ones)
+# Local environment / secrets (never commit these)
 .env
 .env.*
 .netlify/
