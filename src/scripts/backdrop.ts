@@ -5,15 +5,14 @@
  *
  * Static SVG (nothing loads): prefers-reduced-motion, Save-Data / prefers-reduced-data,
  * a low-power device, no WebGL, or a phone with a software renderer.
- * high: desktop with a fine pointer. medium: everything else (phones start later, in idle time).
+ * high: desktop with a fine pointer. medium: everything else.
+ * The 3D code starts downloading as soon as the page has loaded; it's set up in the next idle moment.
  * A desktop with a software renderer (GPU acceleration off) gets the lighter medium tier; the
  * engine's frame-time watchdog hands back to the SVG if it can't keep up.
  *
  * Testing: ?backdrop=off | medium | high skips the checks; ?gl=any accepts any renderer.
  */
 type Choice = 'off' | 'medium' | 'high';
-
-const PHONE_DELAY_MS = 3000;
 
 function hardwareGl(): { ok: boolean; renderer: string } {
   try {
@@ -68,7 +67,7 @@ export function initBackdrop(): void {
   let tier: 'high' | 'medium' = choice;
   let software = false;
 
-  const start = () => {
+  const start = (mod: Promise<typeof import('../world/backdrop/mount')>) => {
     const gl = forced ? { ok: true, renderer: 'skipped (?backdrop)' } : hardwareGl();
     if (!gl.ok && params.get('gl') !== 'any') {
       if (!desktop || gl.renderer === 'no WebGL' || gl.renderer === 'error') {
@@ -80,13 +79,16 @@ export function initBackdrop(): void {
       software = true;
     }
     debug(`loading the ${tier} tier (renderer: ${gl.renderer})`);
-    import('../world/backdrop/mount')
+    mod
       .then(({ mountBackdrops }) => mountBackdrops(tier, software))
       .catch((err) => console.warn('[backdrop] 3D failed to load; the illustrated scenes stay as they are.', err));
   };
   const go = () => {
-    const idle = (cb: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 2000 }) : setTimeout(cb, 300));
-    setTimeout(() => idle(start), tier === 'medium' && !forced ? PHONE_DELAY_MS : 0);
+    // Download the 3D code right away (in parallel with the page settling), set it up when idle.
+    const mod = import('../world/backdrop/mount');
+    mod.catch(() => {}); // a failed download is reported in start()
+    const idle = (cb: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 1000 }) : setTimeout(cb, 200));
+    idle(() => start(mod));
   };
   if (document.readyState === 'complete') go();
   else addEventListener('load', go, { once: true });
