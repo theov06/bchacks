@@ -13,14 +13,14 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: calc(var(--header-h) + var(--s-4));
+  scroll-padding-top: calc(var(--header-h) + var(--notice-h) + var(--s-4)); /* clears the header and the pinned announcement bar */
   color-scheme: dark;
   scrollbar-color: var(--panel-edge) var(--bg-page);
   background: var(--bg-footer); /* overscroll past the footer */
 }
 /*
- * --notice-h: height of the announcement bar, which overlays the top of the page, so
- * page tops can push their copy below it. 0 when there's no bar. The values here are
+ * --notice-h: height of the announcement bar, pinned under the header, so page tops can
+ * push their copy below it and jumps to a section clear it. 0 when there's no bar. The values here are
  * no-JS fallbacks (the text wraps on narrow screens); src/scripts/header.ts sets the
  * measured height.
  */

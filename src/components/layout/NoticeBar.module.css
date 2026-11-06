@@ -1,10 +1,11 @@
+/* Pinned right under the header (which sticks to the top), so it stays in view while scrolling. */
 .notice {
-  position: absolute;
+  position: fixed;
   top: var(--header-h);
   left: 0;
   width: 100%;
   z-index: 51;
-  background: color-mix(in srgb, var(--error-on-cream) 85%, transparent);
+  background: var(--error-on-cream); /* solid: page content scrolls behind it */
   border-bottom: 1px solid var(--line);
   font-size: var(--text-sm);
   line-height: 1.4;
