@@ -139,15 +139,18 @@ export function createLakeBackdrop(tier: 'high' | 'medium'): Backdrop {
     camera,
     resize: (ctx: LayerContext) => frameArt(camera, ctx),
     update(t) {
+      // Every motion is measured from its value at t = 0, so each boat, board and buoy starts
+      // exactly as the art drew it (the 3D takes over from the picture without a jump).
+      const from0 = (v: number, v0: number) => v - v0;
       for (const f of floaters) {
         const s = t * 0.9 + f.phase;
-        const lift = Math.sin(s) * f.bob;
-        const roll = Math.sin(s * 0.8 + 0.6) * f.roll;
+        const lift = from0(Math.sin(s), Math.sin(f.phase)) * f.bob;
+        const roll = from0(Math.sin(s * 0.8 + 0.6), Math.sin(f.phase * 0.8 + 0.6)) * f.roll;
         // The paddleboarder glides a little with each stroke.
-        const drift = f === supF ? Math.sin(t * 0.35) * 24 : Math.sin(t * 0.12 + f.phase) * 6;
+        const drift = f === supF ? Math.sin(t * 0.35) * 24 : from0(Math.sin(t * 0.12 + f.phase), Math.sin(f.phase)) * 6;
         f.obj.position.set(f.x + drift, -(f.y - lift), 0);
         f.obj.rotation.z = roll;
-        f.obj.rotation.y = Math.sin(t * 0.18 + f.phase) * f.turn; // swings round, showing it's solid
+        f.obj.rotation.y = from0(Math.sin(t * 0.18 + f.phase), Math.sin(f.phase)) * f.turn; // swings round, showing it's solid
         if (f.refl) {
           // Mirror about the waterline: the reflection's origin sits as far below it as the
           // squashed (×0.55) object reaches above it.

@@ -8,7 +8,7 @@ import styles from './Faq.module.css';
 
 /**
  * FAQ (#faq): below the surface (v3 scene 7). Native <details> accordions in a grid on dark
- * translucent panels; the first two start open. Keyboard and screen-reader support come
+ * translucent panels; all start closed (content/faq.ts openCount). Keyboard and screen-reader support come
  * from the browser, and every answer is in the HTML. The scene's deep shadow stays in view
  * below the questions.
  */

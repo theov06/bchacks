@@ -135,6 +135,7 @@
  * copies into, laid over the art. It fades in once its first frame is drawn
  * (data-backdrop="live") while the SVG's own copies of those objects fade out.
  */
+/* Each 3D layer starts exactly where its art is drawn, so it takes over quickly (0.3 s). */
 .scene :global(.backdrop-3d) {
   position: absolute;
   inset: 0;
@@ -142,14 +143,14 @@
   height: 100%;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.9s var(--ease-out);
+  transition: opacity 0.3s var(--ease-out);
 }
 .scene[data-backdrop='live'] :global(.backdrop-3d) {
   opacity: 1;
 }
 .scene[data-scene='hero'] :global(#d-clouds),
 .scene[data-scene='hero'] :global(#d-details) > path[stroke='#2a2470'] {
-  transition: opacity 0.9s var(--ease-out);
+  transition: opacity 0.3s var(--ease-out);
 }
 /* Hero: the clouds and the five birds are now drawn in 3D. */
 .scene[data-scene='hero'][data-backdrop='live'] :global(#d-clouds),
@@ -170,7 +171,7 @@
 .scene[data-scene='faq'] :global(.bubble),
 .scene[data-scene='faq'] :global(#u-deep-shadow),
 .scene[data-scene='footer'] :global(.bubble) {
-  transition: opacity 0.9s var(--ease-out);
+  transition: opacity 0.3s var(--ease-out);
 }
 .scene[data-scene='schedule'][data-backdrop='live'] :global(.cyclist),
 .scene[data-scene='sponsors'][data-backdrop='live'] :global(.tree),

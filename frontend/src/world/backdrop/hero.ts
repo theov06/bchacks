@@ -253,19 +253,26 @@ export function createHeroBackdrop(tier: 'high' | 'medium'): Backdrop {
     const scrollLift = Math.min(1.5, Math.max(0, ctx.scroll)) * 60;
 
     for (const [i, c] of clouds.entries()) {
-      // 0 → drift → 0, smoothly (a cosine), each cloud at its own point in the cycle.
-      const phase = (t / DRIFT_PERIOD) * Math.PI * 2 + i * 1.9;
+      // 0 → drift → 0, smoothly (a cosine). Every cloud starts exactly where the art drew it
+      // (so the hand-off from the picture is seamless) and has its own period, so they drift
+      // out of step from there.
+      const phase = (t / (DRIFT_PERIOD * (1 + i * 0.13))) * Math.PI * 2;
       const x = c.left + ((1 - Math.cos(phase)) / 2) * c.def.drift;
       const depth = 1 + c.def.z / 400; // 1 near … 0.35 far
-      const bob = Math.sin(t * 0.35 + c.left) * 3;
-      place(c.group, x + px * 14 * depth, c.def.base[1] + bob + py * 8 * depth - scrollLift * depth, c.def.z);
+      const bob = Math.sin(t * 0.35 * (1 + i * 0.1)) * 3;
+      // Clouds the art doesn't have (high tier only) puff into being over the first moments,
+      // instead of popping in when the 3D takes over from the picture.
+      const grow = c.def.tier ? THREE.MathUtils.smootherstep(t, 0, 4) : 1;
+      place(c.group, x + px * 14 * depth, c.def.base[1] + bob + py * 8 * depth - scrollLift * depth, c.def.z, Math.max(0.001, grow));
     }
 
     for (const b of birds) {
-      // A slow lazy loop around home, wings flapping, an occasional glide.
+      // A slow lazy loop around home, wings flapping, an occasional glide. The loop is measured
+      // from where the art drew the bird, so at the start it's exactly on its drawn spot.
       const s = t * 0.22 + b.phase;
-      const x = b.home.x + Math.sin(s) * 34 + Math.sin(s * 0.37) * 18;
-      const y = b.home.y + Math.sin(s * 1.3) * 10;
+      const p0 = b.phase;
+      const x = b.home.x + (Math.sin(s) - Math.sin(p0)) * 34 + (Math.sin(s * 0.37) - Math.sin(p0 * 0.37)) * 18;
+      const y = b.home.y + (Math.sin(s * 1.3) - Math.sin(p0 * 1.3)) * 10;
       place(b.pivot, x + px * 10, y + py * 6 - scrollLift, b.pivot.position.z);
       b.pivot.rotation.z = Math.cos(s) * 0.12; // bank into the turn
       const glide = Math.sin(t * 0.5 + b.phase) > 0.6 ? 0.25 : 1;

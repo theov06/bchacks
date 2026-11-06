@@ -17,7 +17,7 @@ export const faqIntro = {
   heading: 'Questions? Dive in.',
   highlight: 'Dive in.',
   lede: 'Everything below the surface. Something else on your mind? Email [{contactEmail}](mailto:{contactEmail}).',
-  openCount: 2,
+  openCount: 0, // every answer starts closed
 };
 
 export const faq: FaqItem[] = [

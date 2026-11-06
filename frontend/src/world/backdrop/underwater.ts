@@ -9,10 +9,20 @@ import * as THREE from 'three';
 import type { Backdrop, LayerContext } from './engine';
 import { artCamera, bubbles, frameArt, inked, rng, softDisc } from './kit';
 
-/** Each school roams a box (art units) around where the art drew it. */
+/**
+ * Each school roams a box (art units) around where the art drew it. `drawn` are the art's own
+ * fish (x, y, scale): the first fish of each school start exactly on them, so the 3D takes over
+ * from the picture without a jump; any extra fish start scattered around `start`.
+ */
 const SCHOOLS = [
-  { box: [860, 150, 1400, 420], start: [1100, 270], count: [6, 4], scale: 0.85 },
-  { box: [120, 790, 640, 990], start: [330, 880], count: [5, 3], scale: 0.8 },
+  {
+    box: [860, 150, 1400, 420],
+    start: [1100, 270],
+    count: [6, 4],
+    scale: 0.85,
+    drawn: [[1080, 260, 1], [1140, 300, 0.8], [1030, 320, 0.85], [1170, 220, 0.7]],
+  },
+  { box: [120, 790, 640, 990], start: [330, 880], count: [5, 3], scale: 0.8, drawn: [[330, 860, 0.9], [390, 900, 0.75], [280, 910, 0.7]] },
 ] as const;
 
 function makeFish() {
@@ -78,12 +88,14 @@ export function createUnderwaterBackdrop(tier: 'high' | 'medium'): Backdrop {
     const n = tier === 'high' ? s.count[0] : s.count[1];
     for (let i = 0; i < n; i++) {
       const f = makeFish();
-      f.g.scale.setScalar(s.scale * (0.85 + rand() * 0.3));
+      const art = s.drawn[i] as readonly [number, number, number] | undefined;
+      const jitter = [rand(), rand(), rand()]; // drawn always, so the extras stay the same
+      f.g.scale.setScalar(art ? art[2] : s.scale * (0.85 + jitter[0] * 0.3));
       scene.add(f.g);
       const dir = si === 0 ? 1 : -1;
       fish.push({
         f,
-        p: new THREE.Vector2(s.start[0] + (rand() - 0.5) * 140, s.start[1] + (rand() - 0.5) * 80),
+        p: art ? new THREE.Vector2(art[0], art[1]) : new THREE.Vector2(s.start[0] + (jitter[1] - 0.5) * 140, s.start[1] + (jitter[2] - 0.5) * 80),
         v: new THREE.Vector2(dir * (18 + rand() * 10), (rand() - 0.5) * 6),
         yaw: dir > 0 ? 0 : Math.PI,
         target: dir > 0 ? 0 : Math.PI,

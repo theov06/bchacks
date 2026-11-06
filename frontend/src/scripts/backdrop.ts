@@ -6,7 +6,7 @@
  * Static SVG (nothing loads): prefers-reduced-motion, Save-Data / prefers-reduced-data,
  * a low-power device, no WebGL, or a phone with a software renderer.
  * high: desktop with a fine pointer. medium: everything else.
- * The 3D code starts downloading as soon as the page has loaded; it's set up in the next idle moment.
+ * The 3D code starts downloading as soon as the page is parsed and mounts as soon as it arrives.
  * A desktop with a software renderer (GPU acceleration off) gets the lighter medium tier; the
  * engine's frame-time watchdog hands back to the SVG if it can't keep up.
  *
@@ -83,13 +83,11 @@ export function initBackdrop(): void {
       .then(({ mountBackdrops }) => mountBackdrops(tier, software))
       .catch((err) => console.warn('[backdrop] 3D failed to load; the illustrated scenes stay as they are.', err));
   };
-  const go = () => {
-    // Download the 3D code right away (in parallel with the page settling), set it up when idle.
-    const mod = import('../world/backdrop/mount');
-    mod.catch(() => {}); // a failed download is reported in start()
-    const idle = (cb: () => void) => ('requestIdleCallback' in window ? requestIdleCallback(cb, { timeout: 1000 }) : setTimeout(cb, 200));
-    idle(() => start(mod));
-  };
-  if (document.readyState === 'complete') go();
-  else addEventListener('load', go, { once: true });
+  // Start at once (this runs right after the page is parsed, before images finish): download
+  // the 3D code and mount it as soon as it arrives, so the hero comes alive quickly. The 3D
+  // starts exactly where the art is drawn, so the hand-off is seamless. The other sections
+  // set themselves up later, in idle time (engine.ts).
+  const mod = import('../world/backdrop/mount');
+  mod.catch(() => {}); // a failed download is reported in start()
+  mod.then(() => requestAnimationFrame(() => start(mod))).catch(() => start(mod));
 }

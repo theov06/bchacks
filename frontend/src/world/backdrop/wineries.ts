@@ -59,9 +59,11 @@ export function createWineriesBackdrop(tier: 'high' | 'medium'): Backdrop {
     resize: (ctx: LayerContext) => frameArt(camera, ctx),
     update(t, _dt, ctx) {
       for (const tr of trees) {
-        // Calm sway, never in sync: a slow swing plus a little gust.
-        tr.pivot.rotation.z = Math.sin(t * 0.6 + tr.phase) * 0.035 + Math.sin(t * 1.7 + tr.phase * 2) * 0.012;
-        tr.pivot.rotation.y = Math.sin(t * 0.4 + tr.phase) * 0.25; // a slow turn shows the canopy is round
+        // Calm sway, never in sync: a slow swing plus a little gust. Measured from t = 0, so
+        // every tree starts upright and facing the way the art drew it.
+        const p = tr.phase;
+        tr.pivot.rotation.z = (Math.sin(t * 0.6 + p) - Math.sin(p)) * 0.035 + (Math.sin(t * 1.7 + p * 2) - Math.sin(p * 2)) * 0.012;
+        tr.pivot.rotation.y = (Math.sin(t * 0.4 + p) - Math.sin(p)) * 0.25; // a slow turn shows the canopy is round
       }
       const lead = 1640 - ((t * 38) % SPAN); // flies right → left, off and back on
       for (const f of birds) {
