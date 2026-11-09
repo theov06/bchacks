@@ -25,6 +25,18 @@ const NOTIFY_SHEET = 'Notify list';
 const NOTIFY_HEADERS = ['Submitted', 'Email'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/**
+ * Personal and student email providers. Leads from these aren't blocked (small businesses
+ * often use Gmail); they're marked in the Notes column and the team's email, so the team can
+ * check them first. Add or remove domains here.
+ */
+const PERSONAL_DOMAINS = [
+  'gmail.com', 'googlemail.com', 'outlook.com', 'hotmail.com', 'hotmail.ca', 'live.com', 'live.ca',
+  'msn.com', 'yahoo.com', 'yahoo.ca', 'ymail.com', 'icloud.com', 'me.com', 'mac.com', 'aol.com',
+  'proton.me', 'protonmail.com', 'pm.me', 'gmx.com', 'gmx.net', 'mail.com', 'yandex.com',
+  'shaw.ca', 'telus.net', 'rogers.com', 'sympatico.ca',
+];
+
 function doPost(e) {
   const p = (e && e.parameter) || {};
   const js = p.js === '1';
@@ -41,11 +53,14 @@ function doPost(e) {
     return reply(js, false, 'Some fields are missing or the email address is not valid.');
   }
 
+  const kind = emailKind(email);
+  const note = kind ? kind + ' email (' + email.split('@').pop().toLowerCase() + ')' : '';
+
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
     const sheet = leadsSheet();
-    sheet.appendRow([new Date(), name, company, clean(email, 200), false, '']);
+    sheet.appendRow([new Date(), name, company, clean(email, 200), false, note]);
     sheet.getRange(sheet.getLastRow(), 5).insertCheckboxes();
   } finally {
     lock.releaseLock();
@@ -55,15 +70,28 @@ function doPost(e) {
     MailApp.sendEmail({
       to: NOTIFY,
       replyTo: email,
-      subject: 'New sponsor lead: ' + company,
+      subject: 'New sponsor lead: ' + company + (kind ? ' [' + kind.toLowerCase() + ' email]' : ''),
       body:
         name + ' from ' + company + ' asked for the sponsorship deck.\n\n' +
-        'Email: ' + email + '\n\n' +
+        'Email: ' + email + '\n' +
+        (kind ? 'Note: this is a ' + kind.toLowerCase() + ' email address, not a company one. Check it is a real sponsor before sending the deck.\n' : '') +
+        '\n' +
         'Reply to this email to send them the deck, then tick "Deck sent?" in the sheet:\n' +
         SpreadsheetApp.getActiveSpreadsheet().getUrl(),
     });
   }
   return reply(js, true);
+}
+
+/**
+ * 'Personal' for free email providers, 'Student' for student addresses (student.ubc.ca and
+ * other student.* or alumni.* domains, and .edu), '' for anything else (most likely a company).
+ */
+function emailKind(email) {
+  const domain = String(email).split('@').pop().toLowerCase().trim();
+  if (PERSONAL_DOMAINS.indexOf(domain) !== -1) return 'Personal';
+  if (/(^|\.)(student|alumni)\./.test(domain) || /\.edu$/.test(domain)) return 'Student';
+  return '';
 }
 
 /** "Notify me" sign-up: one row per email on the "Notify list" tab. */
