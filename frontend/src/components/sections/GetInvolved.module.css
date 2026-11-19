@@ -68,3 +68,15 @@
   align-self: flex-start;
   margin-top: 6px;
 }
+/* In place of the button while a role has no form yet: clearly not clickable. */
+.soon {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 6px 14px;
+  border: 2px dashed var(--outline);
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--card-muted);
+}

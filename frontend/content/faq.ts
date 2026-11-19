@@ -43,7 +43,7 @@ export const faq: FaqItem[] = [
   },
   {
     question: 'When do applications close?',
-    answer: '{deadline}.',
+    answer: "Applications are open now. We'll announce the closing date soon.", // CONFIRM: put the deadline back as '{deadline}.' once it's set in content/site.ts
   },
   {
     question: 'Where is it?',

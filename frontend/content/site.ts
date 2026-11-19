@@ -33,7 +33,7 @@ export interface Notice {
 
 export const site = {
   state: 'open' as SiteState,
-  applyMode: 'soon' as ApplyMode,
+  applyMode: 'open' as ApplyMode,
 
   name: 'BCHacks',
   year: 2026,
@@ -57,13 +57,13 @@ export const site = {
   description:
     "BCHacks is UBC Okanagan's student hackathon: one weekend to build something real in Kelowna, BC. Free to attend. Beginners welcome.",
 
-  // Dates confirmed Nov 2, 2026: Nov 27–29, 2026; applications close Nov 18, 2026.
+  // Dates confirmed Nov 2, 2026: Nov 27–29, 2026. Applications opened Nov 19, 2026; the new closing date isn't set yet.
   startDate: '2026-11-27T10:00:00-08:00', // CONFIRM start time
   endDate: '2026-11-29T17:00:00-08:00', // CONFIRM end time
   datesLabel: 'November 27–29, 2026',
   /** Short form for tight spots (hero data blocks on phones). */
   datesShort: 'Nov 27–29, 2026',
-  deadline: '2026-11-18T23:59:00-08:00', // CONFIRM time of day
+  deadline: '2026-11-18T23:59:00-08:00', // CONFIRM: out of date (passed); not shown anywhere until the FAQ uses {deadline} again
   deadlineLabel: 'Apply by Nov 18, 2026',
   /** Long form for sentences (FAQ). */
   deadlineLong: 'November 18, 2026',
@@ -80,7 +80,7 @@ export const site = {
 
   // Links — CONFIRM
   siteUrl: 'https://bchacks.ca', // used for canonical + social cards
-  applyUrl: 'https://forms.example.com/bchacks-2026-apply', // CONFIRM
+  applyUrl: 'https://docs.google.com/forms/d/e/1FAIpQLScJQ6GKYoCQgvhb00SzzFPolouGFvB-ZYtuzwHbo-giq56d5g/viewform', // BCHacks 2026 application (Google Form)
   /** Form endpoint for the "Get notified" email sign-up. While empty, the form asks visitors to email contactEmail instead. */
   notifyFormAction: '',
   sponsorPacketUrl: '/bchacks-sponsorship-packet.pdf', // CONFIRM — add the PDF to public/

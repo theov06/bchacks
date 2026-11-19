@@ -25,9 +25,14 @@ export function GetInvolved() {
                 </span>
                 <h3>{r.title}</h3>
                 <p>{r.description}</p>
-                <Button href={r.formUrl} tone={r.tone} size="sm" external={/^https?:/.test(r.formUrl)} className={styles.cta}>
-                  {r.cta}
-                </Button>
+                {r.formUrl ? (
+                  <Button href={r.formUrl} tone={r.tone} size="sm" external={/^https?:/.test(r.formUrl)} className={styles.cta}>
+                    {r.cta}
+                  </Button>
+                ) : (
+                  // No form yet for this role: a plain label, not a link (content/roles.ts).
+                  <p className={styles.soon}>Coming soon</p>
+                )}
               </li>
             ))}
           </ul>
