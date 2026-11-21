@@ -6,16 +6,22 @@
  * pixel size: they set the logo's proportions and keep the layout from shifting.
  */
 export type SponsorStatus = 'current' | 'past';
+/** Current sponsors are grouped into these rows, in this order (labels in sponsorsIntro.tiers). */
+export type SponsorTier = 'title' | 'silver' | 'swag' | 'club';
 
 export interface Sponsor {
   name: string;
   logo: { src: string; width: number; height: number };
   url: string;
   status: SponsorStatus;
+  /** Row for a current sponsor. */
+  tier?: SponsorTier;
   /** Years they sponsored BCHacks, shown under past logos. Leave empty if unknown. */
   years: number[];
   /** Optional size nudge for logos that look small at the same area (thin lines, lots of air). 1 = default. */
   scale?: number;
+  /** Dark artwork: show the logo on a small cream badge so it reads on the dark sponsor board. */
+  chip?: boolean;
 }
 
 /** Home page sponsors section (v3). */
@@ -24,6 +30,12 @@ export const sponsorsIntro = {
   heading: 'Grown in the valley, backed by builders.',
   highlight: 'backed by builders.',
   currentLabel: 'Current sponsors',
+  tiers: [
+    { id: 'title', label: 'Title sponsor' },
+    { id: 'silver', label: 'Silver sponsor' },
+    { id: 'swag', label: 'Swag sponsor' },
+    { id: 'club', label: 'Partnering clubs' },
+  ] as { id: SponsorTier; label: string }[],
   pastLabel: 'Past sponsors',
   /** The one current-sponsor panel while none is confirmed; opens the sponsor form. */
   firstSponsorLabel: 'Be our 2026 sponsor',
@@ -38,6 +50,14 @@ export const sponsorsIntro = {
  *   { name: 'Company', status: 'current', logo: { src: '/images/sponsors/current/company.svg', width: 240, height: 80 }, url: 'https://company.com', years: [2026] },
  */
 export const sponsors: Sponsor[] = [
+  // 2026 sponsors and partnering clubs (Nov 21, 2026), original colours on the night-sky board.
+  { name: 'VaultDrive', status: 'current', tier: 'title', logo: { src: '/images/sponsors/current/vaultdrive.webp', width: 498, height: 47 }, url: 'https://vaultdrive.io', years: [2026] },
+  { name: 'SLNGSHOT Growth Studio', status: 'current', tier: 'silver', logo: { src: '/images/sponsors/current/slngshot.webp', width: 168, height: 46 }, url: 'https://slngshot.io/', years: [2026] },
+  { name: 'Accuro', status: 'current', tier: 'swag', logo: { src: '/images/sponsors/current/accuro.webp', width: 718, height: 97 }, url: 'https://accuroemr.com/', years: [2026] },
+  { name: 'UBCO AI Club', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/ai-club.webp', width: 356, height: 356 }, url: 'https://www.instagram.com/aiclub.suo/', years: [2026] },
+  { name: 'UBCO Aerospace', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/ubco-aerospace.webp', width: 165, height: 82 }, url: 'https://www.instagram.com/ubco_aerospace/', years: [2026], scale: 1.25 },
+  { name: 'UBCO Motorsports', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/ubco-motorsports.webp', width: 112, height: 42 }, url: 'https://www.instagram.com/ubcomotorsports/', years: [2026] },
+  { name: 'HEAT Robotics', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/heat-robotics.webp', width: 154, height: 45 }, url: 'https://www.instagram.com/heat.robotics/', years: [2026] },
   // Past sponsors, logos supplied by the team (Nov 4, 2026). CONFIRM years for each.
   { name: 'RBC', status: 'past', logo: { src: '/images/sponsors/past/rbc.webp', width: 443, height: 160 }, url: 'https://www.rbc.com', years: [] },
   { name: 'Cisco', status: 'past', logo: { src: '/images/sponsors/past/cisco.webp', width: 303, height: 160 }, url: 'https://www.cisco.com', years: [] },

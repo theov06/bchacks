@@ -14,6 +14,179 @@
 .tier + .tier {
   margin-top: 30px;
 }
+/*
+ * Sponsor lineup on one grid, sitting straight on the valley scene. The title sponsor
+ * spans half the row, silver and swag a quarter each, all the same height with their
+ * tags lined up; clubs and past sponsors share one 6-column rhythm of equal cells.
+ * White artwork sits on frosted-glass badges (the hills show through), dark artwork
+ * (past sponsors) on cream ones; every logo keeps its own colours.
+ */
+.lineup {
+  --focus: var(--sky);
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 32px 20px;
+  margin-top: 40px;
+}
+.group {
+  --tag: var(--text-muted);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  justify-items: start;
+  gap: 12px;
+  min-width: 0;
+}
+.group[data-tier='title'] {
+  --tag: var(--sun);
+  grid-column: span 6;
+}
+.group[data-tier='silver'] {
+  --tag: #dfe4f5;
+  grid-column: span 3;
+}
+.group[data-tier='swag'] {
+  --tag: var(--coral);
+  grid-column: span 3;
+}
+.group[data-tier='club'] {
+  --tag: var(--aqua);
+  grid-column: 1 / -1;
+}
+.group[data-tier='past'] {
+  --tag: var(--cream);
+  grid-column: 1 / -1;
+}
+.tag {
+  padding: 5px 12px 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+  color: var(--outline);
+  background: var(--tag);
+  border: 2px solid var(--outline);
+  border-radius: var(--r-pill);
+}
+.logos {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  justify-self: stretch;
+}
+.group:is([data-tier='club'], [data-tier='past']) .logos {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+.logos > li {
+  display: grid;
+  min-width: 0;
+}
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 112px;
+  padding: 18px 24px;
+  /* Frosted glass: a dark tint with blur, so the hills show through behind white logos. */
+  background: rgb(6 24 18 / 0.45);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border: 2px solid color-mix(in srgb, var(--cream) 35%, transparent);
+  border-radius: var(--r-md);
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+.badge:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--cream) 70%, transparent);
+}
+.badge img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.group[data-tier='club'] .badge {
+  height: 80px;
+  padding: 12px 16px;
+}
+/* Dark-lettered logos (past sponsors) on cream. */
+.light {
+  --focus: var(--outline);
+  background: var(--cream);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: var(--stroke);
+  box-shadow: var(--shadow-sm);
+}
+.light:hover {
+  transform: translate(-2px, -2px);
+  border-color: var(--outline);
+  box-shadow: 6px 6px 0 var(--outline);
+}
+.light img {
+  mix-blend-mode: multiply;
+}
+/* Past sponsors: shorter badges, grayscale until hover / focus. */
+.pastBadge {
+  height: 68px;
+  padding: 12px 16px;
+}
+.pastBadge img {
+  filter: grayscale(1);
+  opacity: 0.75;
+  transition:
+    filter var(--dur) var(--ease-out),
+    opacity var(--dur) var(--ease-out);
+}
+.pastBadge:is(:hover, :focus-visible) img {
+  filter: none;
+  opacity: 1;
+}
+/* Tablets: title takes the row, silver and swag split the next; 3 cells per row below. */
+@media (max-width: 1023px) {
+  .group[data-tier='title'] {
+    grid-column: 1 / -1;
+  }
+  .group:is([data-tier='silver'], [data-tier='swag']) {
+    grid-column: span 6;
+  }
+  .group:is([data-tier='club'], [data-tier='past']) .logos {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (max-width: 759px) {
+  .lineup {
+    gap: 26px 12px;
+  }
+  .logos {
+    gap: 12px;
+  }
+  .badge {
+    height: 96px;
+    padding: 16px;
+  }
+  .group:is([data-tier='silver'], [data-tier='swag']) .badge {
+    height: 84px;
+    padding: 14px 12px;
+  }
+  .group:is([data-tier='club'], [data-tier='past']) .logos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .group[data-tier='club'] .badge {
+    height: 72px;
+  }
+  .pastBadge {
+    height: 60px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .badge:hover {
+    transform: none;
+  }
+}
 .tierName {
   margin-bottom: 14px;
   font-family: var(--font-mono);

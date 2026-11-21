@@ -1,4 +1,5 @@
 import { roles, rolesIntro } from '../../../content/roles';
+import { richText } from '../../lib/richText';
 import { cx, type StyleVars } from '../../lib/ui';
 import { Button } from '../ui/Button';
 import { Icon } from '../ui/Icon';
@@ -16,7 +17,7 @@ export function GetInvolved() {
       <Scene name="involved" />
       <div className="container">
         <div className={styles.column}>
-          <SectionHead id="involved-title" eyebrow={rolesIntro.eyebrow} title={rolesIntro.heading} highlight={rolesIntro.highlight} lede={rolesIntro.lede} />
+          <SectionHead id="involved-title" eyebrow={rolesIntro.eyebrow} title={rolesIntro.heading} highlight={rolesIntro.highlight} lede={<span dangerouslySetInnerHTML={{ __html: richText(rolesIntro.lede) }} />} />
           <ul role="list" className={styles.cards}>
             {roles.map((r) => (
               <li key={r.title} className={cx('sticker', styles.card)} style={{ '--tone': `var(--${r.tone})` } as StyleVars}>

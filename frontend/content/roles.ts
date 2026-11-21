@@ -12,7 +12,8 @@ export const rolesIntro = {
   eyebrow: 'Get involved',
   heading: 'Not hacking? Hop in the boat.',
   highlight: 'Hop in the boat.',
-  lede: 'Mentors, judges and volunteers keep the weekend afloat.',
+  // {contactEmail} and [label](url) are filled in by src/lib/richText.ts. Drop the second sentence once the mentor and judge forms are live.
+  lede: "Mentors, judges and volunteers keep the weekend afloat. Applications for mentors and judges open soon. Until then, if you'd like to mentor or judge, kindly email us at [{contactEmail}](mailto:{contactEmail}).",
 };
 
 export const roles: Role[] = [

@@ -1,5 +1,5 @@
 import { site } from '../../../content/site';
-import { sponsors, sponsorsIntro, type Sponsor } from '../../../content/sponsors';
+import { sponsors, sponsorsIntro, type Sponsor, type SponsorTier } from '../../../content/sponsors';
 import { cx, externalProps } from '../../lib/ui';
 import { Button } from '../ui/Button';
 import { NewTab } from '../ui/NewTab';
@@ -17,6 +17,9 @@ function logoSize({ logo, scale = 1 }: Sponsor, base: number) {
   const ratio = logo.width / logo.height;
   return { width: Math.round(Math.sqrt(area * ratio)), height: Math.round(Math.sqrt(area / ratio)) };
 }
+
+/** Logo area (px²) per row: the title sponsor reads biggest, clubs match the past-sponsor panels. */
+const TIER_AREA: Record<SponsorTier, number> = { title: 15000, silver: 6400, swag: 5000, club: 2600 };
 
 function Logo({ sponsor, area }: { sponsor: Sponsor; area: number }) {
   return <img src={sponsor.logo.src} alt={sponsor.name} loading="lazy" decoding="async" {...logoSize(sponsor, area)} />;
@@ -38,31 +41,64 @@ export function Sponsors() {
       <div className="container">
         <SectionHead id="sponsors-title" eyebrow={sponsorsIntro.eyebrow} title={sponsorsIntro.heading} highlight={sponsorsIntro.highlight} />
 
-        <section className={styles.tier} data-tier="current" aria-labelledby="tier-current">
-          <h3 id="tier-current" className={styles.tierName}>
-            {sponsorsIntro.currentLabel}
-          </h3>
-          <ul role="list" className={styles.slots}>
-            {current.length > 0 ? (
-              current.map((s) => (
-                <li key={s.name}>
-                  <a className={cx(styles.slot, styles.sign)} href={s.url} {...externalProps}>
-                    <Logo sponsor={s} area={9000} />
-                    <NewTab />
-                  </a>
-                </li>
-              ))
-            ) : (
+        {current.length > 0 ? (
+          <div className={styles.lineup}>
+            {sponsorsIntro.tiers.map(({ id, label }) => {
+              const group = current.filter((s) => s.tier === id);
+              if (group.length === 0) return null;
+              return (
+                <section key={id} className={styles.group} data-tier={id} aria-labelledby={`tier-${id}`}>
+                  <h3 id={`tier-${id}`} className={styles.tag}>
+                    {label}
+                  </h3>
+                  <ul role="list" className={styles.logos}>
+                    {group.map((s) => (
+                      <li key={s.name}>
+                        <a className={cx(styles.badge, s.chip && styles.light)} href={s.url} {...externalProps}>
+                          <Logo sponsor={s} area={TIER_AREA[id]} />
+                          <NewTab />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            })}
+            {past.length > 0 && (
+              <section className={styles.group} data-tier="past" aria-labelledby="tier-past">
+                <h3 id="tier-past" className={styles.tag}>
+                  {sponsorsIntro.pastLabel}
+                </h3>
+                <ul role="list" className={styles.logos}>
+                  {past.map((s) => (
+                    <li key={s.name} className={styles.pastItem}>
+                      <a className={cx(styles.badge, styles.light, styles.pastBadge)} href={s.url} {...externalProps}>
+                        <Logo sponsor={s} area={3800} />
+                        <NewTab />
+                      </a>
+                      {s.years.length > 0 && <span className={cx('mono', styles.years)}>{s.years.join(' · ')}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
+        ) : (
+          <section className={styles.tier} data-tier="current" aria-labelledby="tier-current">
+            <h3 id="tier-current" className={styles.tierName}>
+              {sponsorsIntro.currentLabel}
+            </h3>
+            <ul role="list" className={styles.slots}>
               <li className={styles.firstItem}>
                 <a className={cx(styles.slot, styles.sign, styles.first)} href={`mailto:${site.sponsorEmail}`} data-sponsor-open="">
                   <span className={styles.open}>{sponsorsIntro.firstSponsorLabel}</span>
                 </a>
               </li>
-            )}
-          </ul>
-        </section>
+            </ul>
+          </section>
+        )}
 
-        {past.length > 0 && (
+        {current.length === 0 && past.length > 0 && (
           <section className={styles.tier} data-tier="past" aria-labelledby="tier-past">
             <h3 id="tier-past" className={styles.tierName}>
               {sponsorsIntro.pastLabel}
