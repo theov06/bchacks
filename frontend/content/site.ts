@@ -27,6 +27,8 @@ export interface Notice {
   href?: string;
   linkLabel?: string;
   opensSponsorForm?: boolean;
+  /** Link to wherever the Apply buttons go (src/lib/apply.ts) instead of href. */
+  apply?: boolean;
   /** Only show the notice in these site states (so it can't contradict the hero). */
   showIn: SiteState[];
 }
@@ -146,9 +148,8 @@ export const site = {
   notice: {
     date: '',
     label: '',
-    text: 'Sponsor us for BCHacks 2026. Contact us to get involved.',
-    href: '/#sponsors', // opens the sponsor pop-up form; without JS, the home page's sponsors section
-    opensSponsorForm: true,
+    text: 'Registration is open now!',
+    apply: true, // same destination as the Apply now buttons
     linkLabel: 'Learn more',
     showIn: ['open'],
   } as Notice | null,

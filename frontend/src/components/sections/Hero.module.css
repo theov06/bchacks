@@ -222,10 +222,12 @@
     height: auto;
     aspect-ratio: 16 / 9;
   }
-  /* Desktop: the copy sits 90px further left (the team's layout). Phones and tablets keep it
-     inside the page margins, or the start of every line is cut off. */
+  /* Desktop: the copy sits up to 90px further left (the team's layout), but only as far as
+     the space outside the container allows, so it never crosses the page gutter. On 1280-1420px
+     laptops a flat -90px pushed the start of every line off-screen. (100vw counts a classic
+     scrollbar, so 10px is held back for it.) */
   .copy {
-    translate: -90px 0;
+    translate: calc(-1 * clamp(0px, (100vw - var(--max) - 2 * var(--gutter)) / 2 - 10px, 90px)) 0;
   }
   .copy :global(.eyebrow) {
     margin-bottom: clamp(12px, 2.4svh, 20px);
