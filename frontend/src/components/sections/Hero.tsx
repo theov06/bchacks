@@ -40,8 +40,8 @@ function HeroActions({ state }: { state: SiteState }) {
           <Button href={applyLink().href} size="lg" icon="arrow" external={applyLink().external}>
             Apply now
           </Button>
-          <Button href="#sponsors" variant="secondary" size="lg" sponsorForm>
-            Sponsor us
+          <Button href={site.posterUrl} variant="secondary" size="lg" external>
+            View poster
           </Button>
         </>
       );
