@@ -1,6 +1,5 @@
 /**
- * Schedule (v3): three days, one card each. Times are not confirmed yet: every '[Time]'
- * is a placeholder. CONFIRM all times (and the items) before launch.
+ * Schedule (v3): three days, one card each.
  */
 export interface ScheduleItem {
   time: string;
@@ -22,9 +21,10 @@ export const scheduleIntro = {
   eyebrow: 'Schedule',
   heading: 'One weekend, three days on the trail.',
   highlight: 'three days on the trail.',
-  lede: 'Friday to Sunday, November 27–29 at UBC Okanagan. Exact times are coming soon.',
+  lede: 'Friday to Sunday, November 27–29 at UBC Okanagan.',
 };
 
+// Confirmed by the team, Nov 22, 2026.
 export const schedule: ScheduleDay[] = [
   {
     day: 'Fri',
@@ -33,9 +33,11 @@ export const schedule: ScheduleDay[] = [
     title: 'Kick-off',
     tone: 'coral',
     items: [
-      { time: 'All day', title: 'Coming Soon' }, // CONFIRM
-      //{ time: '[Time]', title: 'Sponsor welcome' }, // CONFIRM
-      //{ time: '[Time]', title: 'Hacking starts' }, // CONFIRM
+      { time: '6:00 pm', title: 'Doors open + team formation' },
+      { time: '6:30 pm', title: 'Kick-off presentation' },
+      { time: '7:15 pm', title: 'Team registration' },
+      { time: '7:15–8:15 pm', title: 'Dinner' },
+      { time: '8:30 pm', title: 'Team bonding challenge + wrap-up' },
     ],
   },
   {
@@ -45,9 +47,10 @@ export const schedule: ScheduleDay[] = [
     title: 'Build day',
     tone: 'sun',
     items: [
-      { time: 'All day', title: 'Coming Soon' }, // CONFIRM
-      //{ time: 'All day', title: 'Mentor hours' }, // CONFIRM
-      //{ time: '[Time]', title: 'Evening activity' }, // CONFIRM
+      { time: 'All day', title: 'Build day' },
+      { time: 'All day', title: 'Snack drops' },
+      { time: '10:00 am', title: 'Breakfast' },
+      { time: '6:00 pm', title: 'Dinner' },
     ],
   },
   {
@@ -57,9 +60,10 @@ export const schedule: ScheduleDay[] = [
     title: 'Demo day',
     tone: 'aqua',
     items: [
-      { time: 'All day', title: 'Coming Soon' }, // CONFIRM
-      //{ time: '[Time]', title: 'Demos and judging' }, // CONFIRM
-      //{ time: '[Time]', title: 'Closing and awards' }, // CONFIRM
+      { time: '12:00–12:30 pm', title: 'Submission deadline' },
+      { time: '12:45 pm', title: 'First-round demos (all teams)' },
+      { time: '2:00 pm', title: 'Second-round demos (finalists)' },
+      { time: '3:30 pm', title: 'Closing ceremony' },
     ],
   },
 ];

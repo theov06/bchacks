@@ -35,19 +35,21 @@
   font-weight: 800;
   color: var(--card-ink);
 }
+/* Two columns shared by every row (subgrid): the time column is as wide as the card's
+   longest time ("12:00–12:30 pm"), so all the activity names start at the same edge. */
 .day ul {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px 14px;
   font-size: 16px;
   line-height: 1.2;
 }
 .day ul li {
-  display: flex;
-  gap: 14px;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
 }
 .time {
-  flex: none;
   min-width: 64px;
   font-family: var(--font-mono);
   font-size: 14px;
