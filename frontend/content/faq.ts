@@ -27,15 +27,15 @@ export const faq: FaqItem[] = [
   },
   {
     question: 'How much does it cost?',
-    answer: 'Nothing. BCHacks is free to attend.',
+    answer: 'Nothing. BCHacks is free to attend, with all meals included.',
   },
   {
     question: 'Who can attend?',
-    answer: 'Beginners are welcome.', // CONFIRM eligibility: UBC Okanagan students only, or students from any school? Add it here.
+    answer: 'Everyone in the tech community, UBC and non-UBC students alike. All skill levels are welcome.',
   },
   {
     question: 'Do I need a team or an idea?',
-    answer: `No. Come solo and team up at the event, or bring friends. Teams of up to ${teamSize}.`,
+    answer: `No. Bring your friends, or come solo and we'll put you on an awesome team. Teams are ${teamSize} people.`,
   },
   {
     question: "I've never coded. Can I still come?",
@@ -51,6 +51,6 @@ export const faq: FaqItem[] = [
   },
   {
     question: 'What should I bring?',
-    answer: 'A laptop, a charger and your student ID.', // CONFIRM full list
+    answer: 'A laptop, a charger and your hype.',
   },
 ];

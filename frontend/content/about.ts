@@ -3,8 +3,8 @@
  * short sentences, confirmed facts only. Values in [brackets] are placeholders: CONFIRM.
  */
 
-/** Team size limit. Shown in "You belong here". CONFIRM before launch. */
-export const teamSize = '4';
+/** Team size. Shown in the FAQ. */
+export const teamSize = '5–6';
 
 export const about = {
   eyebrow: 'About BCHacks',
@@ -15,13 +15,22 @@ export const about = {
     "BCHacks is UBC Okanagan's student hackathon. For one weekend in November, students team up to turn an idea into something that works: an app, a game, a gadget, a tool.",
     'Bring an idea or find one there. Mentors help you get unstuck, and on Sunday you demo what you built.', // CONFIRM (mentors, Sunday demos)
   ],
-  belongHeading: 'You belong here',
+  /** "Who it's for": under the intro paragraphs, one row per audience. */
+  audienceHeading: "Who it's for",
+  audienceLede: 'You! All skill levels are welcome and encouraged.',
+  audience: [
+    { label: 'CS and Data Science', text: 'Build a full tech project in one weekend and grow your network.' },
+    { label: 'Engineering', text: "Compete in engineering tracks run with UBCO's engineering clubs." },
+    { label: 'Business', text: 'Learn how tech products are built, and help lead one.' },
+  ],
+  belongHeading: 'The essentials',
   /** Checklist rows; the tick colours cycle aqua, sun, pink, mint. */
   belong: [
-    'First hackathon? Perfect. Beginners are welcome.',
-    `Come solo or bring a team of up to ${teamSize}.`,
-    'Any major, any skill level.', // CONFIRM eligibility wording
-    'Free to attend.',
+    'Free to attend, with all meals included',
+    'Open to everyone in the tech community, UBC and non-UBC students alike',
+    '$3,500+ in prizes, plus interviews with sponsors for the winners',
+    "Bring your friends, or come solo and we'll put you on an awesome team",
+    'Bring a laptop, a charger and your hype',
   ],
 };
 

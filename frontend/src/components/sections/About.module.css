@@ -63,6 +63,43 @@
   margin-top: 22px;
 }
 
+/* "Who it's for": a short heading, a one-line answer, then one row per audience with the
+   audience name in the section accent (mint) above its line. */
+.audience {
+  max-width: 34em;
+  margin-top: 28px;
+}
+.audience h3 {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.audienceLede {
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+.audience dl {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+.audience dt {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+}
+.audience dd {
+  margin-top: 2px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--text-soft);
+}
+
 .belong {
   flex: 1 1 360px;
   min-width: 0;

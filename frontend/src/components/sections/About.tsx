@@ -10,7 +10,7 @@ import styles from './About.module.css';
 /** A 1×1 transparent GIF, for the postcard pictures on screens that hide them. */
 const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-/** Tick colours for "You belong here", in order (design reference). */
+/** Tick colours for "The essentials", in order (design reference). */
 const ticks = ['aqua', 'sun', 'pink', 'mint'] as const;
 
 /**
@@ -41,6 +41,18 @@ export function About() {
                 {p}
               </p>
             ))}
+            <section className={styles.audience} aria-labelledby="audience-title">
+              <h3 id="audience-title">{about.audienceHeading}</h3>
+              <p className={styles.audienceLede}>{about.audienceLede}</p>
+              <dl>
+                {about.audience.map((a) => (
+                  <div key={a.label}>
+                    <dt>{a.label}</dt>
+                    <dd>{a.text}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
           </div>
 
           <div className={cx('sticker', styles.belong)}>
