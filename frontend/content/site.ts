@@ -93,7 +93,7 @@ export const site = {
   contactEmail: 'cscu.okanagan@gmail.com',
   sponsorEmail: 'cscu.okanagan@gmail.com',
   /** Event poster (hero's "View poster" button while applications are open). */
-  posterUrl: '/images/poster/bchacks-2026-poster.pdf',
+  posterUrl: '/images/poster/bchacks-2026-poster.png',
 
   /**
    * Forms go through Netlify Forms (the site is hosted on Netlify; setup in README "Forms").
