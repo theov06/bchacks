@@ -33,6 +33,9 @@ export interface Notice {
   showIn: SiteState[];
 }
 
+/** BCHacks Discord invite: the announcement bar, the live page and the hero while live. */
+const discordUrl = 'https://discord.gg/aq95XkQBGM';
+
 export const site = {
   state: 'open' as SiteState,
   applyMode: 'open' as ApplyMode,
@@ -106,7 +109,7 @@ export const site = {
      */
     sheetUrl: 'https://script.google.com/macros/s/AKfycbx3pkRc8aVfjEtDBtDJQgXlZ9Xw7RYHSPhziHmqUhlzRDYFpwGUwTEsJ44Q8QfGCoxtgg/exec',
   },
-  discordUrl: 'https://discord.gg/bchacks', // CONFIRM
+  discordUrl,
 
   social: [
     { label: 'Instagram', href: 'https://www.instagram.com/bchacks/', icon: 'instagram' }, // CONFIRM
@@ -150,9 +153,9 @@ export const site = {
   notice: {
     date: '',
     label: '',
-    text: 'Registration is open now!',
-    apply: true, // same destination as the Apply now buttons
-    linkLabel: 'Learn more',
+    text: 'Join our Discord server!',
+    href: discordUrl,
+    linkLabel: 'Join now',
     showIn: ['open'],
   } as Notice | null,
 };

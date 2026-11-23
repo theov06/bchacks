@@ -15,7 +15,7 @@ export function NoticeBar({ isHome = false }: NoticeBarProps) {
   const n = site.notice && site.notice.showIn.includes(site.state) ? site.notice : null;
   if (!n) return null;
   if (isHome && n.href && /(^|\/)#top$/.test(n.href)) return null;
-  const link = n.apply ? applyLink() : n.href ? { href: n.href, external: false } : null;
+  const link = n.apply ? applyLink() : n.href ? { href: n.href, external: /^https?:\/\//.test(n.href) } : null;
   return (
     <div className={styles.notice} data-notice role="region" aria-label="Announcement">
       <p className={cx('container', styles.inner)}>
