@@ -60,7 +60,7 @@ export const site = {
     signupLabel: 'Your email',
   },
   description:
-    "BCHacks is UBC Okanagan's student hackathon: one weekend to build something real in Kelowna, BC. Free to attend. Beginners welcome.",
+    "UBC Okanagan's student hackathon, Nov 27–29. Build something real in one weekend: $3,500+ in prizes, meals included, all skill levels welcome. Register now.",
 
   // Dates confirmed Nov 2, 2026: Nov 27–29, 2026. Applications opened Nov 19, 2026; the new closing date isn't set yet.
   startDate: '2026-11-27T10:00:00-08:00', // CONFIRM start time

@@ -1,5 +1,5 @@
 /**
- * FAQ (v3): the eight questions from the approved design, shown in a grid of <details>.
+ * FAQ (v3): questions shown in a grid of <details>.
  * The first `openCount` answers start open. Values in [brackets] are placeholders: CONFIRM.
  * Answers are plain text; wrap a link as [label](url).
  * {contactEmail} and {deadline} are filled in from content/site.ts.
@@ -24,10 +24,6 @@ export const faq: FaqItem[] = [
   {
     question: 'What is a hackathon?',
     answer: 'A weekend where you team up to build a project from scratch, learn new tools along the way, and show what you made at the end.',
-  },
-  {
-    question: 'How much does it cost?',
-    answer: 'Nothing. BCHacks is free to attend, with all meals included.',
   },
   {
     question: 'Who can attend?',

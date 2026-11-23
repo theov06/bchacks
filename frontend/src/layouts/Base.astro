@@ -39,10 +39,11 @@ const {
   showNotice = true,
 } = Astro.props;
 
-const fullTitle = title ? `${title} · ${site.edition}` : `${site.edition} · UBC Okanagan's hackathon · ${site.datesLabel}`;
+const fullTitle = title ? `${title} · ${site.edition}` : `${site.edition} · Build something real at UBC Okanagan · ${site.datesShort.replace(/, \d{4}$/, '')}`;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.siteUrl).href;
 const ogImage = new URL('/og-image.png', Astro.site ?? site.siteUrl).href;
-const ogAlt = `${site.edition}: ${site.datesLabel} at ${site.venue.name}, ${site.venue.cityLabel}.`;
+// og-image.png is the top of the event poster (logo to "HACKS '26"), padded to 1200×630.
+const ogAlt = `CSCU presents BC Hacks '26: the BCHacks logo, the UBC crest and the dinosaur mascot over the event title.`;
 // Dev only: the React fast-refresh preamble the 3D world's .tsx modules need (Astro adds it only for client:* islands).
 const reactPreamble =
   "import R from '/@react-refresh'; R.injectIntoGlobalHook(window); window.$RefreshReg$ = () => {}; window.$RefreshSig$ = () => (t) => t; window.__vite_plugin_react_preamble_installed__ = true;";

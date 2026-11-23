@@ -26,7 +26,7 @@ export const about = {
   belongHeading: 'The essentials',
   /** Checklist rows; the tick colours cycle aqua, sun, pink, mint. */
   belong: [
-    'Free to attend, with meals and snacks included throughout the weekend',
+    'Meals and snacks included throughout the weekend',
     'Open to everyone in the tech community, UBC and non-UBC students alike',
     '$3,500+ in prizes, plus interviews with sponsors for the winners',
     "Bring your friends, or come solo and we'll put you on an awesome team",
