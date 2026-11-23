@@ -38,7 +38,7 @@ function HeroActions({ state }: { state: SiteState }) {
       return (
         <>
           <Button href={applyLink().href} size="lg" icon="arrow" external={applyLink().external}>
-            Apply now
+            Register now
           </Button>
           <Button href={site.posterUrl} variant="secondary" size="lg" external>
             View poster

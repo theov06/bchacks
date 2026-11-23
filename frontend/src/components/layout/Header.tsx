@@ -21,7 +21,7 @@ interface NavLink {
 function headerAction(base: string) {
   switch (site.state) {
     case 'open':
-      return { label: 'Apply', ...applyLink(), primary: true };
+      return { label: 'Register', ...applyLink(), primary: true };
     case 'live':
       return { label: 'Live now', href: '/live', external: false, primary: true };
     default:

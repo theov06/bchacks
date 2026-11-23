@@ -24,7 +24,7 @@ interface FooterLink {
 function closing(state: SiteState) {
   switch (state) {
     case 'open':
-      return { note: site.footer.closesLabel, action: { label: 'Apply now', ...applyLink() } };
+      return { note: site.footer.closesLabel, action: { label: 'Register now', ...applyLink() } };
     case 'live':
       return { note: 'BCHacks is coming soon.', action: { label: 'Open the live page', href: '/live', external: false } };
     case 'closed':

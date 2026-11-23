@@ -142,7 +142,7 @@ export const site = {
     heading: 'You made it to the bottom. Now come build.',
     highlight: 'Now come build.',
     /** Shown under the heading while applications are open. */
-    closesLabel: 'Applications are opening soon!',
+    closesLabel: 'Registration is open now!',
     credit: 'Run by Computer Science Course Union (CSCU) at UBC Okanagan.',
   },
 
