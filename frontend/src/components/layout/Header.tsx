@@ -42,6 +42,7 @@ export function Header({ base = '' }: HeaderProps) {
     { label: 'Schedule', href: `${base}#schedule` },
     { label: 'Sponsors', href: `${base}#sponsors` },
     { label: 'FAQ', href: `${base}#faq` },
+    ...(site.showKickoffLink ? [{ label: 'Kick-off', href: '/kickoff' }] : []),
   ];
   const menuLinks = links;
   const action = headerAction(base);

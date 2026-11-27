@@ -12,3 +12,6 @@ dist/
 .env
 .env.*
 .netlify/
+
+# Kick-off deck in plain text (only the encrypted copy in public/kickoff/ is committed)
+frontend/kickoff-src/

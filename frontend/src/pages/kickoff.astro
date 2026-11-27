@@ -1,0 +1,166 @@
+---
+/**
+ * Kick-off slides (/kickoff), password protected.
+ *
+ * The deck is published only as public/kickoff/deck.enc (AES-256-GCM, key from the
+ * password via PBKDF2). This page asks for the password, decrypts the deck in the browser
+ * and replaces itself with it. The plain deck stays in kickoff-src/ (git-ignored).
+ * To change the deck or the password: KICKOFF_PASSWORD='…' npm run kickoff:encrypt
+ * (scripts/encrypt-kickoff.mjs). Standalone page: none of the site's styles or scripts.
+ */
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Kick-off · BCHacks 2026</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #141a55;
+        --card: #1b2166;
+        --text: #f4f6ff;
+        --muted: #c9d0f0;
+        --line: rgba(255, 255, 255, 0.24);
+        --pop: #ff5ca8;
+        --sun: #ffd08a;
+        --coral: #ff8a7a;
+        --ink: #0e1446;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: 16px;
+        background: radial-gradient(ellipse 70% 45% at 72% 108%, rgba(132, 170, 247, 0.32), transparent 72%),
+          linear-gradient(180deg, #121a55 0%, #222a78 45%, #33349a 78%, #3d43ad 100%);
+        color: var(--text);
+        font: 400 16px/1.5 Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      main {
+        width: min(400px, 100%);
+        background: rgba(10, 12, 44, 0.6);
+        border: 1.5px solid var(--line);
+        border-radius: 22px;
+        padding: 28px 24px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      h1 { margin: 0 0 6px; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+      h1 b { color: var(--pop); }
+      p { margin: 0 0 20px; color: var(--muted); }
+      label { display: block; font-weight: 600; margin-bottom: 8px; }
+      input {
+        width: 100%;
+        min-height: 48px;
+        padding: 0 14px;
+        font: inherit;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+      }
+      button {
+        width: 100%;
+        min-height: 50px;
+        margin-top: 14px;
+        font: 700 16px Inter, system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--text);
+        border: 3px solid var(--ink);
+        border-radius: 999px;
+        box-shadow: 4px 4px 0 var(--ink);
+        cursor: pointer;
+      }
+      button:disabled { opacity: 0.7; cursor: progress; }
+      input:focus-visible, button:focus-visible, a:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; }
+      .err { min-height: 1.5em; margin: 12px 0 0; color: var(--coral); font-weight: 600; }
+      .back { display: inline-block; margin-top: 18px; color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>BC Hacks <b>'26</b> kick-off</h1>
+      <p>These slides are for the organizing team. Enter the password to open them.</p>
+      <form id="unlock">
+        <label for="pw">Password</label>
+        <input id="pw" type="password" autocomplete="current-password" required autofocus />
+        <button type="submit" id="go">Open slides</button>
+        <p class="err" id="err" role="alert"></p>
+      </form>
+      <a class="back" href="/">← Back to bchacks.ca</a>
+    </main>
+    <script is:inline>
+      {
+        const KEY = 'bch26:kickoff-pw';
+        const form = document.getElementById('unlock');
+        const pw = document.getElementById('pw');
+        const btn = document.getElementById('go');
+        const err = document.getElementById('err');
+
+        async function open(password) {
+          const res = await fetch('/kickoff/deck.enc', { cache: 'no-cache' });
+          if (!res.ok) throw new Error('missing');
+          // Layout (scripts/encrypt-kickoff.mjs): 4-byte iterations · 16-byte salt · 12-byte IV · ciphertext
+          const buf = new Uint8Array(await res.arrayBuffer());
+          const iterations = new DataView(buf.buffer).getUint32(0);
+          const salt = buf.subarray(4, 20);
+          const iv = buf.subarray(20, 32);
+          const data = buf.subarray(32);
+          const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+          const key = await crypto.subtle.deriveKey(
+            { name: 'PBKDF2', hash: 'SHA-256', salt, iterations },
+            base,
+            { name: 'AES-GCM', length: 256 },
+            false,
+            ['decrypt'],
+          );
+          let plain;
+          try {
+            plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+          } catch {
+            throw new Error('wrong');
+          }
+          try { sessionStorage.setItem(KEY, password); } catch {}
+          const html = new TextDecoder().decode(plain);
+          document.open();
+          document.write(html);
+          document.close();
+        }
+
+        async function attempt(password, quiet) {
+          btn.disabled = true;
+          btn.textContent = 'Opening…';
+          err.textContent = '';
+          try {
+            await open(password);
+          } catch (e) {
+            try { sessionStorage.removeItem(KEY); } catch {}
+            btn.disabled = false;
+            btn.textContent = 'Open slides';
+            if (!quiet) {
+              err.textContent = e.message === 'wrong' ? 'That password is not right. Try again.' : 'The slides could not be loaded. Check your connection.';
+              pw.select();
+            }
+          }
+        }
+
+        form.addEventListener('submit', (e) => {
+          e.preventDefault();
+          attempt(pw.value, false);
+        });
+
+        // Same tab, already unlocked: skip the prompt on reload.
+        let saved = null;
+        try { saved = sessionStorage.getItem(KEY); } catch {}
+        if (saved) attempt(saved, true);
+      }
+    </script>
+  </body>
+</html>

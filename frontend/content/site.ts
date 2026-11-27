@@ -94,6 +94,8 @@ export const site = {
   sponsorEmail: 'cscu.okanagan@gmail.com',
   /** Event poster (hero's "View poster" button while applications are open). */
   posterUrl: '/images/poster/bchacks-2026-poster.png',
+  /** Show the "Kick-off" link to /kickoff in the nav. Off: the page still works for anyone with the link. */
+  showKickoffLink: false,
 
   /**
    * Forms go through Netlify Forms (the site is hosted on Netlify; setup in README "Forms").
