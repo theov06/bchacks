@@ -43,7 +43,7 @@ export const faq: FaqItem[] = [
   },
   {
     question: 'Where is it?',
-    answer: 'UBC Okanagan in Kelowna, BC.', // CONFIRM building, then add it here
+    answer: 'ASC 140, in the Arts and Sciences Centre at UBC Okanagan in Kelowna, BC.',
   },
   {
     question: 'What should I bring?',

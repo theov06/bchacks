@@ -9,10 +9,10 @@ export const live = {
   wifi: { network: 'ubcvisitor', password: 'No password — accept the terms page', note: 'Eduroam also works if your school supports it.' },
   venueMap: {
     image: '', // e.g. '/live/venue-map.webp' — leave empty to show the placeholder
-    alt: 'Floor plan of the EME building showing hacking rooms, food, the quiet room and the hardware desk.',
+    alt: 'Floor plan of the Arts and Sciences Centre showing hacking rooms, food, the quiet room and the hardware desk.',
   },
   rooms: [
-    { name: 'Hacking', where: 'EME 1st & 2nd floor' },
+    { name: 'Hacking', where: 'ASC 140' },
     { name: 'Food and help desk', where: 'EME atrium' },
     { name: 'Hardware library', where: 'EME 1162' },
     { name: 'Quiet room', where: 'EME 2181' },

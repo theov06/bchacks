@@ -76,11 +76,11 @@ export const site = {
   costLabel: 'Free',
 
   venue: {
-    name: 'UBC Okanagan', // CONFIRM building
-    building: 'Engineering, Management & Education Building (EME)', // CONFIRM
-    address: '1137 Alumni Ave, Kelowna, BC V1V 1V7',
+    name: 'ASC 140, UBC Okanagan',
+    building: 'Arts and Sciences Centre (ASC 140)',
+    address: '3187 University Way, Kelowna, BC V1V 1V7',
     cityLabel: 'Kelowna, BC',
-    mapsUrl: 'https://maps.google.com/?q=UBC+Okanagan+EME+Building',
+    mapsUrl: 'https://maps.google.com/?q=UBC+Okanagan+Arts+and+Sciences+Centre',
   },
 
   // Links — CONFIRM

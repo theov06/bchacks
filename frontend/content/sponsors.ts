@@ -55,7 +55,6 @@ export const sponsors: Sponsor[] = [
   { name: 'SLNGSHOT Growth Studio', status: 'current', tier: 'silver', logo: { src: '/images/sponsors/current/slngshot.webp', width: 168, height: 46 }, url: 'https://slngshot.io/', years: [2026] },
   { name: 'Accuro', status: 'current', tier: 'swag', logo: { src: '/images/sponsors/current/accuro.webp', width: 718, height: 97 }, url: 'https://accuroemr.com/', years: [2026] },
   { name: 'UBCO AI Club', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/ai-club.webp', width: 356, height: 356 }, url: 'https://www.instagram.com/aiclub.suo/', years: [2026] },
-  { name: 'UBCO Aerospace', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/ubco-aerospace.webp', width: 165, height: 82 }, url: 'https://www.instagram.com/ubco_aerospace/', years: [2026], scale: 1.25 },
   { name: 'UBCO Motorsports', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/ubco-motorsports.webp', width: 112, height: 42 }, url: 'https://www.instagram.com/ubcomotorsports/', years: [2026] },
   { name: 'HEAT Robotics', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/heat-robotics.webp', width: 154, height: 45 }, url: 'https://www.instagram.com/heat.robotics/', years: [2026] },
   // Past sponsors, logos supplied by the team (Nov 4, 2026). CONFIRM years for each.
