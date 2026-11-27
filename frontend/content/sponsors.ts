@@ -7,7 +7,7 @@
  */
 export type SponsorStatus = 'current' | 'past';
 /** Current sponsors are grouped into these rows, in this order (labels in sponsorsIntro.tiers). */
-export type SponsorTier = 'title' | 'silver' | 'swag' | 'club';
+export type SponsorTier = 'title' | 'silver' | 'club';
 
 export interface Sponsor {
   name: string;
@@ -33,7 +33,6 @@ export const sponsorsIntro = {
   tiers: [
     { id: 'title', label: 'Title sponsor' },
     { id: 'silver', label: 'Silver sponsor' },
-    { id: 'swag', label: 'Swag sponsor' },
     { id: 'club', label: 'Partnering clubs' },
   ] as { id: SponsorTier; label: string }[],
   pastLabel: 'Past sponsors',
@@ -53,7 +52,6 @@ export const sponsors: Sponsor[] = [
   // 2026 sponsors and partnering clubs (Nov 21, 2026), original colours on the night-sky board.
   { name: 'VaultDrive', status: 'current', tier: 'title', logo: { src: '/images/sponsors/current/vaultdrive.webp', width: 498, height: 47 }, url: 'https://vaultdrive.io', years: [2026] },
   { name: 'SLNGSHOT Growth Studio', status: 'current', tier: 'silver', logo: { src: '/images/sponsors/current/slngshot.webp', width: 168, height: 46 }, url: 'https://slngshot.io/', years: [2026] },
-  { name: 'Accuro', status: 'current', tier: 'swag', logo: { src: '/images/sponsors/current/accuro.webp', width: 718, height: 97 }, url: 'https://accuroemr.com/', years: [2026] },
   { name: 'UBCO AI Club', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/ai-club.webp', width: 356, height: 356 }, url: 'https://www.instagram.com/aiclub.suo/', years: [2026] },
   { name: 'UBCO Motorsports', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/ubco-motorsports.webp', width: 112, height: 42 }, url: 'https://www.instagram.com/ubcomotorsports/', years: [2026] },
   { name: 'HEAT Robotics', status: 'current', tier: 'club', logo: { src: '/images/sponsors/current/heat-robotics.webp', width: 154, height: 45 }, url: 'https://www.instagram.com/heat.robotics/', years: [2026] },

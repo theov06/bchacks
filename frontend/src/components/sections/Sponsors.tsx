@@ -19,7 +19,7 @@ function logoSize({ logo, scale = 1 }: Sponsor, base: number) {
 }
 
 /** Logo area (px²) per row: the title sponsor reads biggest, clubs match the past-sponsor panels. */
-const TIER_AREA: Record<SponsorTier, number> = { title: 15000, silver: 6400, swag: 5000, club: 2600 };
+const TIER_AREA: Record<SponsorTier, number> = { title: 15000, silver: 6400, club: 2600 };
 
 function Logo({ sponsor, area }: { sponsor: Sponsor; area: number }) {
   return <img src={sponsor.logo.src} alt={sponsor.name} loading="lazy" decoding="async" {...logoSize(sponsor, area)} />;

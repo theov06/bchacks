@@ -16,7 +16,7 @@
 }
 /*
  * Sponsor lineup on one grid, sitting straight on the valley scene. The title sponsor
- * spans half the row, silver and swag a quarter each, all the same height with their
+ * and the silver sponsor split the row, both the same height with their
  * tags lined up; clubs and past sponsors share one 6-column rhythm of equal cells.
  * White artwork sits on frosted-glass badges (the hills show through), dark artwork
  * (past sponsors) on cream ones; every logo keeps its own colours.
@@ -42,11 +42,7 @@
 }
 .group[data-tier='silver'] {
   --tag: #dfe4f5;
-  grid-column: span 3;
-}
-.group[data-tier='swag'] {
-  --tag: var(--coral);
-  grid-column: span 3;
+  grid-column: span 6;
 }
 .group[data-tier='club'] {
   --tag: var(--aqua);
@@ -145,13 +141,13 @@
   filter: none;
   opacity: 1;
 }
-/* Tablets: title takes the row, silver and swag split the next; 3 cells per row below. */
+/* Tablets: title and silver each take a row; 3 cells per row below. */
 @media (max-width: 1023px) {
   .group[data-tier='title'] {
     grid-column: 1 / -1;
   }
-  .group:is([data-tier='silver'], [data-tier='swag']) {
-    grid-column: span 6;
+  .group[data-tier='silver'] {
+    grid-column: 1 / -1;
   }
   .group:is([data-tier='club'], [data-tier='past']) .logos {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -168,7 +164,7 @@
     height: 96px;
     padding: 16px;
   }
-  .group:is([data-tier='silver'], [data-tier='swag']) .badge {
+  .group[data-tier='silver'] .badge {
     height: 84px;
     padding: 14px 12px;
   }
